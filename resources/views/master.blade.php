@@ -7,8 +7,8 @@
   <meta name="user-type" content="{{ optional(Auth::user())->usertype }}">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-  <title>BDWHOLESALE Inventory System</title>
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>ABCD SALES Cloud Software</title>
+  <!--meta name="csrf-token" content="{{ csrf_token() }}"-->
   <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 </head>
 
@@ -17,6 +17,16 @@
 <div class="row flex-nowrap">
   <div class="logo">
           <router-link :to="{name: 'Home'}"><img src="images/logo.png"></router-link>
+          <div class="logorighttext">
+            <?php $authuser = Auth::user();
+            if($authuser){?>
+              Welcome <span class="nametext"><?php
+              print $authuser->name;
+              ?></span>
+            <?php
+            }
+            ?>
+          </div>
   </div>
 </div>
 <div class="row flex-nowrap">

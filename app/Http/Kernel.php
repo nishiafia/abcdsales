@@ -21,6 +21,8 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\SessionExpired::class,
+       //\App\Http\Middleware\Authenticate::class,
     ];
 
     /**
@@ -37,12 +39,16 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\SessionExpired::class,
         ],
 
         'api' => [
+            'auth',
             'throttle:60,1',
             'useapiguard',
-     
+            'bindings',
+            \App\Http\Middleware\SessionExpired::class,
+         //\App\Http\Middleware\Authenticate::class,
         ],
     ];
 
@@ -65,5 +71,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'useapiguard' => \App\Http\Middleware\UseApiGuard::class,
+        'customsession' => \App\Http\Middleware\SessionExpired::class,
     ];
 }

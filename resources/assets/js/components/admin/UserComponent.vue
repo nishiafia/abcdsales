@@ -64,8 +64,8 @@
                     <td>{{ user.usertype | strToUpper}}</td>
                     <td>C: {{ user.companylimit }}, T: {{ user.teamlimit }}, O: {{ user.orderlimit }}, E: {{ user.entrylimit }}</td>
                     <td>{{isToday(user.logintime)}} </td>
-                    <td v-if="user.subscriptionstatus === 1" class="useractive">Active</td>
-                    <td class="userinactive" v-else>In Active</td>
+                    <td v-if="user.isactive === 1" class="useractive">Active</td>
+                    <td class="userinactive" v-else>InActive</td>
                     <td>{{ user.subscriptiondate | formatDate}} </td>
                     <td>
                         <a href="/#/userslist" title="Edit" data-id="user.id" @click="editModalWindow(user)">
@@ -74,8 +74,11 @@
                         <a href="/#/userslist" title="Change Password" data-id="user.id" @click="changeModalWindow(user)">
                             <i class="fa fa-unlock-alt" aria-hidden="true"></i>
                         </a>
-                        <a href="/#/userslist" title="Delete" @click="deleteUser(user.id)">
-                            <i class="fa fa-trash red"></i>
+                        <a  title="Do Inactive" v-if="user.isactive === 1" href="/#/userslist" @click="inactiveUser(user.id)">
+                            <i class="fa fa-ban red" aria-hidden="true"></i>
+                        </a>
+                         <a title="Do Active" v-else href="/#/userslist" @click="activeUser(user.id)">
+                            <i class="fa fa-undo green" aria-hidden="true"></i>
                         </a>
 
                     </td>
@@ -342,6 +345,7 @@ import moment from 'moment';
         updateUser(){
            let headers = {
              "StatusKey": 'basic',
+            "Sessionkey": this.userData.remember_user,
             }
              let form = this.form;
               let fpd = new Date(this.form.subscriptiondate);
@@ -351,9 +355,11 @@ import moment from 'moment';
               let fpd1 = new Date(this.form.subscriptionstartdate);
               let m1 = parseInt(fpd1.getMonth())+1;
               form.subscriptionstartdate = fpd1.getFullYear() + '-' + m1 + '-' + fpd1.getDate();
-              form.put('api/user/'+this.form.id,{headers})
-               .then(()=>{
-
+              form.put('/user/'+this.form.id,{headers})
+               .then((response)=>{
+                 console.log("response=",response.data.mgs);
+                if(response.data.mgs ==='success')
+                {
                    Toast.fire({
                       icon: 'success',
                       title: 'User updated successfully'
@@ -362,6 +368,11 @@ import moment from 'moment';
                     Fire.$emit('AfterCreatedUserLoadIt');
 
                     $('#addNew').modal('hide');
+                }
+                else{
+                   location.reload();
+                this.$router.push({ name: 'home' });
+                }
                })
                .catch(()=>{
                   console.log("Error.....")
@@ -376,15 +387,23 @@ import moment from 'moment';
 
         loadUsers(page) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           if (typeof page === 'undefined') {
              page = 1;
              }
-        axios.get('api/user?page=' + page,{headers})
+        axios.get('/user?page=' + page,{headers})
        .then( response =>{
+           console.log("response=",response.data.mgs);
+           if(response.data.mgs ==='logout')
+           {
+              location.reload();
+              this.$router.push({ name: 'adminlogin' });
+           }
+           else{
             this.users = response.data;
-         console.log("userlist=",this.users);
+        // console.log("userlist=",this.users);
+         }
           });
 
         },
@@ -400,9 +419,16 @@ import moment from 'moment';
 
             this.$Progress.start()
 
-            this.form.post('api/user')
+            this.form.post('/user')
                 .then((response) => {
                     console.log("response:",response.data);
+                    if(response.data.mgs ==='logout')
+                    {
+                    location.reload();
+                    this.$router.push({ name: 'adminlogin' }); 
+
+                    }
+                    else{
                     if(response.data === '')
                     {    // alert("Wrong");
                           Fire.$emit('AfterCreatedUserLoadIt'); //custom events
@@ -422,6 +448,7 @@ import moment from 'moment';
                         this.$Progress.finish()
 
                         $('#addNew').modal('hide');
+                    }
 
                 }})
                 .catch(() => {
@@ -434,13 +461,20 @@ import moment from 'moment';
           },
           searchUser(){
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             this.$Progress.start()
 
             this.formsearch.post('/searchUser',{headers})
                 .then((response) => {
                     console.log("response:",response.data);
+                  if(response.data.mgs ==='logout')
+                  {
+                  location.reload();
+                  this.$router.push({ name: 'adminlogin' }); 
+
+                  }
+                  else{
                     if(response.data === '')
                     {    // alert("Wrong");
                           Fire.$emit('AfterCreatedProductLoadIt'); //custom events
@@ -453,6 +487,7 @@ import moment from 'moment';
                      this.users = response.data;
                     //this.loadProduct();
                     console.log("users =>", this.users);
+                    }
 
                 }})
                 .catch(() => {
@@ -465,10 +500,17 @@ import moment from 'moment';
           },
           submitPassword: function (e){
            var formContents = jQuery("#changepass").serialize();
-           //axios.post('/changeUserPasswordadmin',formContents)
-            axios.post('/changeUserPasswordadmin1',formContents)
+           axios.post('/changeUserPasswordadmin',formContents)
+           // axios.post('/changeUserPasswordadmin1',formContents)
                .then((response)=>{
                   console.log("response=", response.data.mgs);
+                    if(response.data.mgs ==='logout')
+                    {
+                    location.reload();
+                    this.$router.push({ name: 'adminlogin' });
+
+                    }
+                    else{
                   if(response.data.mgs === 'success')
                   {
                    Toast.fire({
@@ -500,11 +542,13 @@ import moment from 'moment';
                     })
                   }
                    // $('#addNew').modal('hide');
+                  }
                })
                .catch(()=>{
                   console.log("Error.....")
                })
         },
+
           deleteUser(id) {
             Swal.fire({
               title: 'Are you sure?',
@@ -518,14 +562,101 @@ import moment from 'moment';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id)
+                this.form.delete('/user/'+id)
                     .then((response)=> {
+                      if(response.data.mgs ==='logout')
+                      {
+                      location.reload();
+                      this.$router.push({ name: 'adminlogin' });
+                      }
+                      else{
                             Swal.fire(
                               'Deleted!',
                               'User deleted successfully',
                               'success'
                             )
                     this.loadUsers();
+                      }
+
+                    }).catch(() => {
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Oops...',
+                          text: 'Something went wrong!',
+                          footer: '<a href>Why do I have this issue?</a>'
+                        })
+                    })
+                }
+
+            })
+          },
+           inactiveUser(id) {
+              let headers = {
+             "StatusKey": 'inactive',
+            }
+            Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, inactive it!'
+            }).then((result) => {
+
+              if (result.value) {
+                //Send Request to server
+                this.form.delete('/user/'+id,{headers})
+                    .then((response)=> {
+                      console.log("response=", response.data);
+                     
+                            Swal.fire(
+                              'Inactive!',
+                              'User Inactive successfully',
+                              'success'
+                            )
+                    this.loadUsers();
+                     
+
+                    }).catch(() => {
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Oops...',
+                          text: 'Something went wrong!',
+                          footer: '<a href>Why do I have this issue?</a>'
+                        })
+                    })
+                }
+
+            })
+          },
+           activeUser(id) {
+              let headers = {
+             "StatusKey": 'active',
+            }
+            Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, active it!'
+            }).then((result) => {
+
+              if (result.value) {
+                //Send Request to server
+                this.form.delete('/user/'+id,{headers})
+                    .then((response)=> {
+                      console.log("response=", response.data);
+                  
+                            Swal.fire(
+                              'Activited!',
+                              'User active successfully',
+                              'success'
+                            )
+                    this.loadUsers();
+                 
 
                     }).catch(() => {
                         Swal.fire({

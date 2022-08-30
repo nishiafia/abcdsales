@@ -3,24 +3,55 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Customer;
 use App\User;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+//use Auth;
+use Illuminate\Support\Facades\Session;
 
 class CustomerController extends Controller
 {
+
+   // use AuthenticatesUsers;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+  
     public function index(Request $request)
     {
+        Auth::logout();
+        Log::info( "Nishi1 ===>" . base64_decode($request->header('sessionKey')));
         $systemid = base64_decode($request->header('sessionKey'));
         $userinfo = User::where('id', $systemid)->first();
         Log::info( "systemid ===>" . $systemid);
+        if (Auth::check()) {
+            Log::info( "authcheck ===>" . $auser);
+        }
+        $auser=Auth::user();
+        $now = Carbon::now();
+
+        $last_seen = Carbon::parse($userinfo->last_seen_at);
+        $absence = $last_seen->diffInMinutes($now,true);
+          Log::info( "auth111111 ===>" . $auser);
+         Log::info( "nowc ===>" . $now);
+         Log::info( "absencec ===>" . $absence);
+         Log::info( "last_seenc ===>" . $last_seen);
+         Log::info( "timeoutc ===>" . config('session.lifetime'));
+        if($absence > config('session.lifetime')) {
+            User::where('id', $userinfo->id)->update(['islogin' => 0]);
+           // Session::flush();
+           Auth::logout();
+            return redirect('/');
+           
+        }
+        else{
         if($userinfo->usertype == 'superadmin')
         {
             $data = Customer::orderby('id', 'asc')->paginate(10);
@@ -38,6 +69,7 @@ class CustomerController extends Controller
              $data = Customer::with('pname')->where('systemid', $userinfo->systemid)->where('companyid', $userinfo->companyid)->orderby('id', 'desc')->paginate(20);
              return response()->json($data);
           }
+        }
     }
     public function searchPartner(Request $request)
     {

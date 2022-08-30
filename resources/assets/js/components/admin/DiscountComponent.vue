@@ -137,7 +137,7 @@
            this.form.fill(excat)
         },
         updateDiscount(){
-           this.form.put('api/discount/'+this.form.id)
+           this.form.put('/discount/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -170,9 +170,9 @@
              page = 1;
              }
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-          axios.get('api/discount?page=' + page, {headers})
+          axios.get('/discount?page=' + page, {headers})
           .then( data => {
             this.discountrates = data.data;
             //console.log('data -> ', data);
@@ -182,7 +182,7 @@
         createDiscount(){
           
             this.$Progress.start()
-            this.form.post('api/discount')
+            this.form.post('/discount')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -224,7 +224,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/discount/'+id,{headers})
+                this.form.delete('/discount/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -258,7 +258,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/discount/'+id,{headers})
+                this.form.delete('/discount/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Active!',
@@ -279,7 +279,7 @@
           },
           loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -289,7 +289,7 @@
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

@@ -149,7 +149,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
                           this.$Progress.start()
 
-                          this.form.post('api/user')
+                          this.form.post('/user')
                           .then((response) => {
                          // console.log("response:",response.data);
                           if(response.data === '')

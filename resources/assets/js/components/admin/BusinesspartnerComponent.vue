@@ -113,7 +113,7 @@
                     <form @submit.prevent="editMode ? updatePartner() : createPartner()">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="phone">Partner Type</label>
+                                <label for="phone">Partner Type <span class="required-sign">*</span></label>
                                 <select name="partnertype" v-model="form.partnertype" id="partnertype" class="form-control" :class="{ 'is-invalid': form.errors.has('partnertype') }" required>
                                     <option value="">Select Partner Type</option>
                                     <option v-for="ptype in partnertypedata" v-bind:value="ptype.id" :key="ptype.id">
@@ -123,14 +123,14 @@
                                 <has-error :form="form" field="partnertype"></has-error>
                             </div>
                             <div class="form-group">
-                                <label for="phone">Name</label>
+                                <label for="phone">Name <span class="required-sign">*</span></label>
                                 <input v-model="form.customername" type="text" name="customername"
                                     placeholder="Name"
                                     class="form-control" :class="{ 'is-invalid': form.errors.has('customername') }" required>
                                 <has-error :form="form" field="customername"></has-error>
                             </div>
                             <div class="form-group">
-                                <label for="phone">Phone</label>
+                                <label for="phone">Phone <span class="required-sign">*</span></label>
                                  <div class="telephoneformat">Example Format: ( 01712234678 )</div>
                                 <!--VuePhoneNumberInput
                                 default-country-code="BD"
@@ -148,8 +148,13 @@
                                     placeholder="Email Address"
                                     class="form-control"  >
                             </div>
+                          <div class="form-group">
+                          <label>File
+                          <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+                          </label>
+                          </div>
                             <div class="form-group">
-                            <label for="address">Address</label>
+                            <label for="address">Address <span class="required-sign">*</span></label>
                             <textarea v-model="form.address" type="textarea" name="address"
                             class="form-control" required />
                         </div>
@@ -192,8 +197,9 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                 partnertypedata: {},
                 teamcompanyid:this.userData.companyid,
                 teamcompanies:{},
-                currentdate: moment().format("Y/M/D"),
-                subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+                currentdate: moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
+                 file: '',
                 form: new Form({
                     id: '',
                     customername : '',
@@ -209,6 +215,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                     partnertype: '',
                     country:'Bangladesh',
                     description: '',
+                    
                 }),
                 formsearch: new Form({
                 partnertype: '',
@@ -216,6 +223,11 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             }
         },
         methods: {
+        handleFileUpload(){
+          alert("sdsafdsg");
+        this.file = this.$refs.file.files[0];
+         console.log("file=",this.file);
+      },
         updatePhoneNumber(data) {
                this.form.dialcode=data.countryCallingCode;
                console.log("dialcode=", this.form.dialcode);
@@ -227,7 +239,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
           }
           },
         editModalWindow(partnermember){
-          if(this.currentdate <= this.subsdate&& this.userData.subscriptionstatus === 1)
+          if(this.currentdate <= this.subsdate && this.userData.subscriptionstatus === 1)
           {
            this.form.clear();
            this.editMode = true
@@ -261,7 +273,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
               let duem = parseInt(fpd.getMonth())+1;
               form.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();*/
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             this.formsearch.post('/searchPartner',{headers})
                .then((response)=>{
@@ -273,7 +285,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                })
         },
         updatePartner(){
-           this.form.put('api/customer/'+this.form.id)
+           this.form.put('/customer/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
@@ -312,9 +324,9 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             page = 1;
             }
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
-            axios.get('api/customer?page=' + page, {headers})
+            axios.get('/customer?page=' + page, {headers})
             .then( response =>{
                 this.partners = response.data
                  console.log("partners =>", this.partners);
@@ -329,7 +341,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
         loadSwitchCompany() {
           let headers = {
-          "Sessionkey": this.userData.remember_token,
+          "Sessionkey": this.userData.remember_user,
           }
 
            axios.get('/getswitchcompany', {headers})
@@ -340,7 +352,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
           switchCompany(event){
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
            let target = parseInt(event.target.value);
             axios.get("/updateSwitchCompany/"+target, {headers})
@@ -350,12 +362,14 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
            Fire.$emit('AfterCreatedUserLoadIt'); //custom events
             });
          },
+   
         createPartner(){
             this.$Progress.start()
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
+            'Content-Type': 'multipart/form-data'
             }
-            this.form.post('api/customer',{headers})
+            this.form.post('/customer',{headers})
                 .then((response) => {
                     console.log("response:",response.data.message);
                     if(response.data === '')
@@ -418,7 +432,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/customer/'+id,{headers})
+                this.form.delete('/customer/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -452,7 +466,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/customer/'+id,{headers})
+                this.form.delete('/customer/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Active!',
@@ -487,7 +501,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id,{headers})
+                this.form.delete('/user/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

@@ -840,7 +840,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
         showModalWindowpayment(accountid,methodid){
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           
            if(methodid == 2){
@@ -976,7 +976,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             console.log("event, =>", target);
            
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
 
            
@@ -1062,7 +1062,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
            console.log("pitemprevious=",pitem);
            this.formitem.fill(pitem);
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
            this.formitem.variationsid=[];
           let target=pitem.pitem;
@@ -1120,9 +1120,9 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
        
         async loadPurchaseorder() { 
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-          axios.get("api/purchaseorder/"+this.poid, {headers})
+          axios.get("/purchaseorder/"+this.poid, {headers})
           .then( response =>{
              
               this.porders = response.data.order;
@@ -1166,14 +1166,14 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
         loadItem() {
             let headers = {
-          "Sessionkey": this.userData.remember_token,
+          "Sessionkey": this.userData.remember_user,
         }
           axios.get('/getitem',{headers}).then( response => (this.items = response.data));
           //console.log("vendor=", this.vendors);
         },
          loadExcategory() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getexcat",{headers})
             .then( data =>{
@@ -1190,14 +1190,14 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
          },
           loadVendor() {
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get('/getvendor',{headers}).then( data => (this.vendors = data.data));
             console.log("vendor=", this.vendors);
           },
           loadRefPo(vid) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getrefpo/"+vid,{headers})
             .then( data =>{
@@ -1208,7 +1208,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
       loadDiscount() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getdiscount",{headers})
             .then( data =>{
@@ -1218,7 +1218,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
         loadTax() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/gettax",{headers})
             .then( data =>{
@@ -1230,7 +1230,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             
              console.log("Nishi:");
              this.$Progress.start()
-            this.form.post('api/purchaseaccount')
+            this.form.post('/purchaseaccount')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -1261,7 +1261,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
               let fpd = new Date(this.form.paymentdate);
               let m = parseInt(fpd.getMonth())+1;
               form.paymentdate = fpd.getFullYear() + '-' + m + '-' + fpd.getDate();
-              form.put('api/purchaseaccount/'+this.form.id)
+              form.put('/purchaseaccount/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
@@ -1279,7 +1279,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
             createItem(){
             this.$Progress.start()
-            this.formitem.post('api/purchaseitem')
+            this.formitem.post('/purchaseitem')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === 'Exist')
@@ -1306,7 +1306,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
           },
            updateItem(){
             this.$Progress.start()
-            this.formitem.put('api/purchaseitem/'+this.formitem.id)
+            this.formitem.put('/purchaseitem/'+this.formitem.id)
                .then(()=>{
 
                    Toast.fire({
@@ -1332,7 +1332,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
               let duefpd = new Date(this.formorder.duedeliverydate);
               let duem = parseInt(fpd.getMonth())+1;
               formorder.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();
-              formorder.put('api/purchaseorder/'+this.formorder.id)
+              formorder.put('/purchaseorder/'+this.formorder.id)
                .then(()=>{
                    Toast.fire({
                       icon: 'success',
@@ -1364,7 +1364,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.formitem.delete('api/purchaseitem/'+id,{headers})
+                this.formitem.delete('/purchaseitem/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Cancel!',
@@ -1401,7 +1401,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.formitem.delete('api/purchaseitem/'+id,{headers})
+                this.formitem.delete('/purchaseitem/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Return!',
@@ -1439,7 +1439,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.formorder.delete('api/purchaseorder/'+id,{headers})
+                this.formorder.delete('/purchaseorder/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Confirmed!',
@@ -1476,7 +1476,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.formorder.delete('api/purchaseorder/'+id,{headers})
+                this.formorder.delete('/purchaseorder/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Confirmed!',
@@ -1513,7 +1513,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.formorder.delete('api/purchaseorder/'+id,{headers})
+                this.formorder.delete('/purchaseorder/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Confirmed!',
@@ -1547,7 +1547,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/purchaseaccount/'+id)
+                this.form.delete('/purchaseaccount/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',
@@ -1570,7 +1570,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
           },
           loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -1580,7 +1580,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

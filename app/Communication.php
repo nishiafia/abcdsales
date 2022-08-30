@@ -11,4 +11,8 @@ class Communication extends Model
     {
         return $this->hasOne('App\Customer', 'id', 'vendorid');
     }
+    public function pname()
+    {
+        return $this->hasOne('App\Partner', 'id', 'partnertype');
+    }
 }

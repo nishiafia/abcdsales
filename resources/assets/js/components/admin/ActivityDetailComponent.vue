@@ -46,7 +46,7 @@
                      <td v-if="commdata.activitystatus === 1" class="useractive">Open</td>
                     <td class="userinactive" v-else>Close</td>
                     <td>
-                         <router-link :to="'/activitydetail/' + commdata.vendorid" data-id="commdata.id" @click.native.native="editModalWindow(commdata)"  title="Activity Detail">
+                         <router-link :to="'/activitydetail/' + commdata.vendorid" data-id="commdata.id" @click.native="editModalWindow(commdata)"  title="Activity Detail">
                                <i class="fa fa-edit blue"></i>
                         </router-link>
                     </td>
@@ -174,8 +174,8 @@ import moment from 'moment';
                 partnertypedata: {},
                 teamcompanyid:this.userData.companyid,
                 teamcompanies:{},
-                currentdate: moment().format("Y/M/D"),
-                subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+                currentdate: moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                 form: new Form({
                     id: '',
                     systemid: this.userData.systemid,
@@ -212,7 +212,7 @@ import moment from 'moment';
            onChange(event) {
               this.form.partnertype = event.target.value;
                   let headers = {
-                  "Sessionkey": this.userData.remember_token,
+                  "Sessionkey": this.userData.remember_user,
                   "PartnerType": this.form.partnertype,
                   }
 
@@ -233,7 +233,7 @@ import moment from 'moment';
 
             getSearchList () {
              /* let headers = {
-              "Sessionkey": this.userData.remember_token,
+              "Sessionkey": this.userData.remember_user,
               "PartnerType": this.form.partnertype,
               }
 
@@ -286,7 +286,7 @@ import moment from 'moment';
             this.form.fill(commdata)
 
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             "PartnerType": p,
             }
 
@@ -322,7 +322,7 @@ import moment from 'moment';
               let duem = parseInt(fpd.getMonth())+1;
               form.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();*/
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             this.formsearch.post('/searchPartner',{headers})
                .then((response)=>{
@@ -334,7 +334,7 @@ import moment from 'moment';
                })
         },
         updateActivity(){
-           this.form.put('api/communication/'+this.form.id)
+           this.form.put('/communication/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
@@ -363,7 +363,7 @@ import moment from 'moment';
 
 
               let headers = {
-              "Sessionkey": this.userData.remember_token,
+              "Sessionkey": this.userData.remember_user,
               "PartnerType": this.form.partnertype,
               }
 
@@ -390,7 +390,7 @@ import moment from 'moment';
             page = 1;
             }
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             axios.get('/getcustomercommunication/'+this.vid+'?page=' + page, {headers})
             .then( response =>{
@@ -400,7 +400,7 @@ import moment from 'moment';
         },
         loadSwitchCompany() {
           let headers = {
-          "Sessionkey": this.userData.remember_token,
+          "Sessionkey": this.userData.remember_user,
           }
 
            axios.get('/getswitchcompany', {headers})
@@ -411,7 +411,7 @@ import moment from 'moment';
         },
           switchCompany(event){
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
            let target = parseInt(event.target.value);
             axios.get("/updateSwitchCompany/"+target, {headers})
@@ -424,9 +424,9 @@ import moment from 'moment';
         createActivity(){
             this.$Progress.start()
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
-            this.form.post('api/communication',{headers})
+            this.form.post('/communication',{headers})
                 .then((response) => {
                     console.log("response:",response.data.message);
                     if(response.data === '')
@@ -489,7 +489,7 @@ import moment from 'moment';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/customer/'+id,{headers})
+                this.form.delete('/customer/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -523,7 +523,7 @@ import moment from 'moment';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/customer/'+id,{headers})
+                this.form.delete('/customer/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Active!',
@@ -558,7 +558,7 @@ import moment from 'moment';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id,{headers})
+                this.form.delete('/user/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

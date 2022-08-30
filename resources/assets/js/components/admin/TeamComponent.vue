@@ -90,13 +90,13 @@
 <form @submit.prevent="editMode ? updateTeam() : createTeam()" id="createTeaminfo">
 <div class="modal-body">
      <div class="form-group">
-        <label for="phone">Name</label>
+        <label for="phone">Name <span class="required-sign">*</span></label>
         <input v-model="form.name" type="text" name="name"
             placeholder="Name"
             class="form-control"  required>
     </div>
     <div class="form-group">
-        <label for="phone">Username(phone)</label>
+        <label for="phone">Username(phone) <span class="required-sign">*</span></label>
          <div class="telephoneformat">Example Format: ( 01712234678 )</div>
         <!--VuePhoneNumberInput
         default-country-code="BD"
@@ -110,7 +110,7 @@
          <input v-model="form.telephone" type="tel" name="telephone" maxlength="11" minlength="11" required placeholder="telephone" @keypress="onlyNumber" class="form-control" >
     </div>
      <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Email <span class="required-sign">*</span></label>
         <input v-model="form.email" type="email" name="email"
             placeholder="Email Address"
             class="form-control"  required>
@@ -118,13 +118,13 @@
 
 
     <div class="form-group" v-show="!editMode">
-         <label for="phone">Password</label>
+         <label for="phone">Password <span class="required-sign">*</span></label>
         <input v-model="form.password" type="password" name="password" id="password" placeholder="Enter password"
         class="form-control"  required>
     </div>
 
     <div class="form-group">
-        <label for="phone">Company</label>
+        <label for="phone">Company <span class="required-sign">*</span></label>
         <select  name="companyid1" v-model="checkedCompanys"  class="form-control"  multiple  required>
             <option v-for="teamcompany in companies" v-bind:value="teamcompany.id" :key="teamcompany.id">
             {{ teamcompany.companyname }}
@@ -172,8 +172,8 @@ import moment from 'moment';
                 companies: {},
                 checkedCompanys:[],
                 companyid1: 0,
-                currentdate:  moment().format("Y/M/D"),
-                subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+                currentdate:  moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                  form: new Form({
                     id: '',
                     name : '',
@@ -231,7 +231,7 @@ import moment from 'moment';
            let headers = {
              "StatusKey": 'team',
             }
-           this.form.put('api/user/'+this.form.id,{headers})
+           this.form.put('/user/'+this.form.id,{headers})
                .then(()=>{
                  axios.post('/saveTeamCompany', {teamId: this.form.id, companyInfo: this.checkedCompanys})
                       .then((response) =>{
@@ -314,7 +314,7 @@ import moment from 'moment';
 
         loadTeam() {
          let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
        axios.get("/getteam", {headers})
           .then( data =>{
@@ -324,14 +324,14 @@ import moment from 'moment';
         },
         loadCompany() {
         let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             axios.get('/getteamcompany',{headers}).then( data => (this.companies = data.data));
             console.log("company=", this.companies);
                       },
             loadSwitchCompany() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
 
             axios.get('/getswitchcompany', {headers})
@@ -342,7 +342,7 @@ import moment from 'moment';
             },
             switchCompany(event){
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             let target = parseInt(event.target.value);
             axios.get("/updateSwitchCompany/"+target, {headers})
@@ -415,7 +415,7 @@ import moment from 'moment';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id,{headers})
+                this.form.delete('/user/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -459,7 +459,7 @@ import moment from 'moment';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id,{headers})
+                this.form.delete('/user/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Active!',
@@ -502,11 +502,11 @@ import moment from 'moment';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id,{headers})
+                this.form.delete('/user/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',
-                              'User deleted successfully',
+                              'User deted successfully',
                               'success'
                             )
                    this.loadTeam();

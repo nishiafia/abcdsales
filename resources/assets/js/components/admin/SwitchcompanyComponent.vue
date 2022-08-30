@@ -41,7 +41,7 @@
       
         loadSwitchCompany() {
           let headers = {
-          "Sessionkey": this.userData.remember_token,
+          "Sessionkey": this.userData.remember_user,
           }
 
            axios.get('/getswitchcompany', {headers})
@@ -52,7 +52,7 @@
         },
           switchCompany(event){
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
            let target = parseInt(event.target.value);
             axios.get("/updateSwitchCompany/"+target, {headers})

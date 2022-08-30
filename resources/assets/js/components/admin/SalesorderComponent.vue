@@ -270,7 +270,7 @@ import Datepicker from 'vuejs-datepicker';
 
           getSearchList () {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
           axios.get("/getcustomer",{headers}).then( response => {
              console.log("vendorlist=",response.data)
@@ -310,13 +310,13 @@ import Datepicker from 'vuejs-datepicker';
           },
         loadOrder(page) { 
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           if (typeof page === 'undefined') {
             page = 1;
             }
           //console.log("token =", token);
-          axios.get('api/salesorder?page=' + page, {headers})
+          axios.get('/salesorder?page=' + page, {headers})
           .then( response =>{
               console.log("orders =>", response.data);
               this.porders = response.data
@@ -331,14 +331,14 @@ import Datepicker from 'vuejs-datepicker';
          },
           loadCustomer() {
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get('/getcustomer',{headers}).then( data => (this.customers = data.data));
             console.log("vendor=", this.customers);
           },
           loadRefSo(cid) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getrefso/"+cid,{headers})
             .then( data =>{
@@ -357,7 +357,7 @@ import Datepicker from 'vuejs-datepicker';
               let duem = parseInt(fpd.getMonth())+1;
               form.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();*/
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             this.form.post('/searchSalesOrder',{headers})
                .then((response)=>{
@@ -379,7 +379,7 @@ import Datepicker from 'vuejs-datepicker';
               let duefpd = new Date(this.formorder.duedeliverydate);
               let duem = parseInt(fpd.getMonth())+1;
               formorder.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();
-              formorder.put('api/purchaseorder/'+this.formorder.id)
+              formorder.put('/purchaseorder/'+this.formorder.id)
                .then(()=>{
                    Toast.fire({
                       icon: 'success',
@@ -407,7 +407,7 @@ import Datepicker from 'vuejs-datepicker';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/product/'+id)
+                this.form.delete('/product/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',
@@ -430,7 +430,7 @@ import Datepicker from 'vuejs-datepicker';
           },
            loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -440,7 +440,7 @@ import Datepicker from 'vuejs-datepicker';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

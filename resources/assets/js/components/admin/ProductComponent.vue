@@ -232,8 +232,8 @@ import moment from 'moment';
                 shouldDisable: false,
                 teamcompanyid:this.userData.companyid,
                 teamcompanies:{},
-                currentdate: moment().format("Y/M/D"),
-                subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+                currentdate: moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                 form: new Form({
                     id: '',
                     productcode: '',
@@ -280,7 +280,7 @@ import moment from 'moment';
         methods: {
           loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -290,7 +290,7 @@ import moment from 'moment';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})
@@ -358,7 +358,7 @@ import moment from 'moment';
           }
         },
         updateProduct(){
-           this.form.put('api/product/'+this.form.id)
+           this.form.put('/product/'+this.form.id)
                .then((response)=>{
               console.log("response=",response.data);
                if(response.data === '')
@@ -406,13 +406,13 @@ import moment from 'moment';
 
         loadProduct(page) {
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           if (typeof page === 'undefined') {
             page = 1;
             }
           //console.log("token =", token);
-          axios.get('api/product?page=' + page, {headers})
+          axios.get('/product?page=' + page, {headers})
           .then( response =>{
               console.log("products =>", response.data);
               this.products = response.data
@@ -429,7 +429,7 @@ import moment from 'moment';
         },
          loadGroupcode() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             axios.get("/getgroupcode",{headers})
             .then( data =>{
@@ -440,7 +440,7 @@ import moment from 'moment';
         },
          loadVariationLabel() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             axios.get("/getvariation",{headers})
             .then( response =>{
@@ -453,11 +453,11 @@ import moment from 'moment';
 
         createProduct(){
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             var formContents = jQuery("#createProductinfo").serialize();
             this.$Progress.start()
-            this.form.post('api/product',{headers})
+            this.form.post('/product',{headers})
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -512,7 +512,7 @@ import moment from 'moment';
           },
            searchProduct(){
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             this.$Progress.start()
 
@@ -554,7 +554,7 @@ import moment from 'moment';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/product/'+id)
+                this.form.delete('/product/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

@@ -17,17 +17,14 @@
               </table>
             </div>
           <div class="col-md-12">
-            <div class="card">
+          <div v-if="this.userData.usertype != 'professional'">
+            <p class="firstcompany"> This feature is for professional version.</p>
+ 
+            <p class="firstcompany">Please contact administrator number 09638010100 for your upgrade and access!</p>
+          </div>
+            <div  class="card" v-if="this.userData.usertype === 'professional'">
                <div class="card-header">
                 <h3 class="card-title">Inventory Report</h3>
-                <!--div class="col-md-12 text-center">
-                <p v-if="errors.length">
-                    <b>Please correct the following error(s):</b>
-                    <ul class="list-group">
-                      <li v-for="error in errors" class="list-group-item list-group-item-danger" :key="error">{{ error }}</li>
-                    </ul>
-                </p>
-            </div-->
                <form  @submit.prevent="searchProduct()">
                   <table class="table">
                    <tbody>
@@ -243,6 +240,7 @@
 import Datepicker from 'vuejs-datepicker';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+import moment from 'moment';
     export default {
         props: ['userData'],
         components: {  Datepicker,VuePhoneNumberInput},
@@ -274,8 +272,8 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                 selectedGroupItem: {},
                 selected: [],
                 allSelected: false,
-                currentdate: new Date(),
-                subsdate: new Date(this.userData.subscriptiondate),
+                currentdate: moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                 form: new Form({
                     id: '',
                     productcode: '',
@@ -323,7 +321,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         methods: {
           loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -333,7 +331,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})
@@ -352,7 +350,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
           getSearchList () {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
           axios.get("/getcompany",{headers}).then( response => {
           console.log("customerlist=",response.data)
@@ -389,7 +387,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
           getGroupSearchList () {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
           axios.get("/getinventorygroup",{headers}).then( response => {
           console.log("grouplist=",response.data)
@@ -453,7 +451,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             }
         },
    editModalWindow(product){
-          if(this.currentdate.getTime() <= this.subsdate.getTime() && this.userData.subscriptionstatus === 1) 
+          if(this.currentdate <= this.subsdate && this.userData.subscriptionstatus === 1) 
           {
            this.form.clear();
            this.editMode = true
@@ -472,12 +470,12 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
              Fire.$emit('AfterCreatedProductLoadIt'); //custom events
                 Toast.fire({
                 icon: 'error',
-                title: 'Sorry your membership expired !! \n Please contact to admin for access.'
+                title: 'Sorry your membership expired !! \n Please contact our support 09638010100 \n to unlock your access.'
                 })
           }
         },
         updateProduct(){
-           this.form.put('api/product/'+this.form.id)
+           this.form.put('/product/'+this.form.id)
                .then((response)=>{
               console.log("response=",response.data);
                if(response.data === '')
@@ -506,7 +504,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                })
         },
         openModalWindow(){
-           if(this.currentdate.getTime() <= this.subsdate.getTime() && this.userData.subscriptionstatus === 1) 
+           if(this.currentdate<= this.subsdate && this.userData.subscriptionstatus === 1) 
           {
            this.editMode = false
            this.shouldDisable =false
@@ -518,20 +516,20 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
               Fire.$emit('AfterCreatedProductLoadIt'); //custom events
               Toast.fire({
               icon: 'error',
-              title: 'Sorry your membership expired !! \n Please contact to admin for access.'
+              title: 'Sorry your membership expired !! \n Please contact our support 09638010100 \n to unlock your access.'
               })
             }
         },
 
         /*loadProduct(page) {
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           if (typeof page === 'undefined') {
             page = 1;
             }
           //console.log("token =", token);
-          axios.get('api/product?page=' + page, {headers})
+          axios.get('/product?page=' + page, {headers})
           .then( response =>{
               console.log("products =>", response.data);
               this.products = response.data
@@ -548,7 +546,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
          loadGroupcode() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             axios.get("/getgroupcode",{headers})
             .then( data =>{
@@ -559,7 +557,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
         },
          loadVariationLabel() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             axios.get("/getvariation",{headers})
             .then( response =>{
@@ -572,11 +570,11 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
         createProduct(){
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             var formContents = jQuery("#createProductinfo").serialize();
             this.$Progress.start()
-            this.form.post('api/product',{headers})
+            this.form.post('/product',{headers})
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -592,7 +590,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                           Fire.$emit('AfterCreatedProductLoadIt'); //custom events
                          Toast.fire({
                           icon: 'error',
-                          title: 'Sorry your membership expired !! \n Please contact to admin for access.'
+                          title: 'Sorry your membership expired !! \n Please contact our support 09638010100 \n to unlock your access.'
                         })
                     }
                     else if(response.data.message === 'not')
@@ -600,7 +598,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                           Fire.$emit('AfterCreatedProductLoadIt'); //custom events
                          Toast.fire({
                           icon: 'error',
-                          title: 'Sorry you have no authorization!! \n Please contact to admin for access.'
+                          title: 'Sorry you have no authorization!! \n Please contact our support 09638010100 \n to unlock your access.'
                         })
                     }
                     else{
@@ -631,7 +629,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
           },
            searchProduct(){
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
             this.$Progress.start()
             /* this.errors = [];
@@ -679,7 +677,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/product/'+id)
+                this.form.delete('/product/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

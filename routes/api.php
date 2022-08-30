@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,14 +15,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+/*Route::middleware('auth:api')->get('/companylist', function (Request $request) {
     return $request->user();
 });
+
+Route::get('companylist', 'API\CompanyController@index',function (Request $request) {
+    return $request->user();
+    LOG::info('miiiiiiiii' . Auth::id());
+});*/
 
 
 //Vue js Api Route
 
-Route::apiResources([
+/*Route::apiResources([
         'user' => 'API\UserController'
     ]
 );
@@ -136,17 +142,106 @@ Route::apiResources([
 Route::apiResources([
     'variation' => 'API\VariationController'
 ]
-);
+);*/
 
- /*Route::group(['middleware' => [ 'api' ]],function() {
-   // \DB::enableQueryLog();
+
+
+
+ //Route::group(['middleware' => 'auth:api'],function() {
+  // LOG::info('apiauth=' . Auth::id());
+ 
+    // \DB::enableQueryLog();
     // if (Auth::id()){
     //     LOG::info('sdsdsd' . Auth::id());
     // }
     //dump(\DB::getQueryLog());
-   Route::resource('companylist', 'API\CompanyController')
-    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);;
-});*/
+
+    // Route::get('/companylist', function (Request $request) {
+    //     LOG::info('$request =>' . $request);
+    //     return $request->user();
+    // });
+  /*Route::resource('companylist', 'API\CompanyController')
+  ->only(['index', 'store', 'show', 'edit', 'update','destroy'])
+  ->middleware('useapiguard');
+
+
+
+    Route::resource('user', 'API\UserController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('category', 'API\CategoryController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('productsize', 'API\ProductsizeController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('productcolor', 'API\ProductcolorController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('branch', 'API\BranchController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('customer', 'API\CustomerController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('communication', 'API\CommunicationController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('groupcode', 'API\GroupcodeController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('thanalist', 'API\ThanaController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('districtlist', 'API\DistrictController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('product', 'API\ProductController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('expensecategory', 'API\ExpensecategoryController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('vendor', 'API\VendorController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('purchaseorder', 'API\PurchaseorderController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('purchaseitem', 'API\PurchaseitemController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('purchaseaccount', 'API\PurchaseaccountController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('discount', 'API\DiscountController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('tax', 'API\TaxController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('deliveryagent', 'API\DeliveryagentController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('salesorder', 'API\SalesorderController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('salesitem', 'API\SalesorderitemController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('salesaccount', 'API\SalesorderaccountController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('salesordercomment', 'API\SalesordercommentController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('variationlabel', 'API\VariationlabelController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);
+
+    Route::resource('variation', 'API\VariationController')
+    ->only(['index', 'store', 'show', 'edit', 'update','destroy']);*/
+
+//});
 
 
 //Route::resource('login', 'LoginController');//('/login', 'LoginController');

@@ -100,7 +100,7 @@
            this.form.fill(dis)
         },
         updateDistrict(){
-           this.form.put('api/districtlist/'+this.form.id)
+           this.form.put('/districtlist/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -132,12 +132,12 @@
           if (typeof page === 'undefined') {
              page = 1;
              }
-          axios.get('api/districtlist?page=' + page).then( data => (this.districtlists = data.data));
-          //console.log("data",this.categories);
+          axios.get('/districtlist?page=' + page).then( data => (this.districtlists = data.data));
+          console.log("data",this.categories);
         },
         createDistrict(){
             this.$Progress.start()
-            this.form.post('api/districtlist')
+            this.form.post('/districtlist')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -176,7 +176,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/districtlist/'+id)
+                this.form.delete('/districtlist/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -207,7 +207,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/districtlist/'+id)
+                this.form.delete('/districtlist/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Active!',

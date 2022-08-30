@@ -109,7 +109,7 @@
            this.form.fill(prcolor)
         },
         updateColor(){
-           this.form.put('api/productcolor/'+this.form.id)
+           this.form.put('/productcolor/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -142,15 +142,15 @@
              page = 1;
              }
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-          axios.get('api/productcolor?page=' + page,{headers}).then( data => (this.productcolors = data.data));
+          axios.get('/productcolor?page=' + page,{headers}).then( data => (this.productcolors = data.data));
           //console.log("data",this.categories);
         },
         createColor(){
           
             this.$Progress.start()
-            this.form.post('api/productcolor')
+            this.form.post('/productcolor')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -189,7 +189,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/productcolor/'+id)
+                this.form.delete('/productcolor/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -220,7 +220,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/productcolor/'+id)
+                this.form.delete('/productcolor/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Active!',

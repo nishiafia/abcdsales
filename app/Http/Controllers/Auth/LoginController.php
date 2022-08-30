@@ -55,12 +55,22 @@ class LoginController extends Controller
     }
     public function logout(Request $request) {
       $auth_user = Auth::user();
-      Log::info( "remember_token ===>" . $auth_user->remember_token);
-      User::where('id', $auth_user->id)->update(['islogin' => 0,'remember_token' =>$auth_user->remember_token]);
+      //Log::info( "auth ===>" . $auth_user);
+       User::where('id', $auth_user->id)->update(['islogin' => 0]);
       Auth::logout();
+     // $request->session()->invalidate();
+
+      //$request->session()->regenerateToken();
       return redirect('/');
     }
 
+    public function master(Request $request)
+    {
+        //return view('master');
+        Log::info( "request ===>" . $request);
+        return view('master');
+
+    }
     public function vuelogin(Request $request)
     {
       if (Auth::attempt([
@@ -69,9 +79,10 @@ class LoginController extends Controller
       ])){
         $auth_user = Auth::user();
         Log::info( "auth ===>" . $auth_user->isactive);
-       $lastlogtime = Carbon::now()->toDateTimeString();
+      // $lastlogtime = Carbon::now()->toDateTimeString();
+       $lastlogtime = Carbon::now();
         User::where('id', $auth_user->id)
-          ->update(['remember_token' =>  base64_encode($auth_user->id),'logintime' =>  $lastlogtime,'islogin' => true]);
+          ->update(['remember_user' =>  base64_encode($auth_user->id),'logintime' =>  $lastlogtime,'last_seen_at' =>$lastlogtime,'islogin' => true]);
         $username = $auth_user->name;
         return response()->json([
           'status'   => 'success',
@@ -106,10 +117,10 @@ class LoginController extends Controller
         'password' => $request->password,'isactive'=>1
       ])){
         $auth_user = Auth::user();
-        Log::info( "auth ===>" . $auth_user->isactive);
-       $lastlogtime = Carbon::now()->toDateTimeString();
+        Log::info( "auth ===>" . $auth_user);
+        $lastlogtime = Carbon::now();
         User::where('id', $auth_user->id)
-          ->update(['remember_token' =>  base64_encode($auth_user->id),'logintime' =>  $lastlogtime]);
+          ->update(['remember_user' =>  base64_encode($auth_user->id),'logintime' =>  $lastlogtime,'last_seen_at' =>$lastlogtime]);
         $username = $auth_user->name;
         return response()->json([
           'status'   => 'success',
@@ -127,23 +138,27 @@ class LoginController extends Controller
     {
       //Log::info("User Request=>" . $request);
       $user1 = User::where('telephone', $request->telephone)->get()->first();
-     Log::info("adminpassdb=>" . $user1->name);
-     Log::info("realpss=>" . $request->adminuserpassword);
+    // Log::info("adminpassdb=>" . $user1->name);
+    // Log::info("realpss=>" . $request->adminuserpassword);
       //if (Hash::check($request->adminuserpassword, $user->adminuserpassword)) {
         if (Hash::check($request->adminuserpassword, $user1->adminuserpassword)){
          Auth::login($user1, true);
-        //Log::info("Auth username=>" .  $auth_user->name);
+         //$auth_user = Auth::user();
+      //  Log::info("Auth username=>" .  $auth_user);
         $username = $user1->name;
-        if($user1->remember_token === '')
+        if($user1->remember_user === '')
         {
         User::where('id', $user1->id)
-        ->update(['remember_token' =>  base64_encode($user1->id)]);
-        Log::info("Update  Token=>" .  $user1->remember_token);
+        ->update(['remember_user' =>  base64_encode($user1->id)]);
+        //Log::info("Update  Token=>" .  $user1->remember_user);
         }
        return response()->json([
           'status'   => 'success',
           'user' => $username,
         ]);
+
+
+
       }else {
         return response()->json([
           'status' => 'error',
@@ -162,7 +177,7 @@ if (Auth::attempt([
         Log::info( "auth ===>" . $auth_user->isactive);
        $lastlogtime = Carbon::now()->toDateTimeString();
        User::where('id', $auth_user->id)
-          ->update(['remember_token' =>  base64_encode($auth_user->id),'logintime' =>  $lastlogtime,'islogin' => true]);
+          ->update(['remember_user' =>  base64_encode($auth_user->id),'logintime' =>  $lastlogtime,'islogin' => true]);
         $username = $auth_user->name;
         return response()->json([
           'status'   => 'success',

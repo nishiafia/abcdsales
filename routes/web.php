@@ -1,6 +1,7 @@
 <?php
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,14 +14,133 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::apiResources([
+  'user' => 'API\UserController'
+]
+);
+Route::apiResources([
+'category' => 'API\CategoryController'
+]
+);
+
+Route::apiResources([
+'productsize' => 'API\ProductsizeController'
+]
+);
+
+Route::apiResources([
+'productcolor' => 'API\ProductcolorController'
+]
+);
+
+Route::apiResources([
+'branch' => 'API\BranchController'
+]
+);
+
+Route::apiResources([
+'customer' => 'API\CustomerController'
+]
+);
+Route::apiResources([
+'communication' => 'API\CommunicationController'
+]
+);
+
+Route::apiResources([
+'groupcode' => 'API\GroupcodeController'
+]
+);
+
+Route::apiResources([
+'thanalist' => 'API\ThanaController'
+]
+);
+Route::apiResources([
+'districtlist' => 'API\DistrictController'
+]
+);
+
+Route::apiResources([
+'companylist' => 'API\CompanyController'
+]
+);
+Route::apiResources([
+'product' => 'API\ProductController'
+]
+);
+
+Route::apiResources([
+'expensecategory' => 'API\ExpensecategoryController'
+]
+);
+
+Route::apiResources([
+'vendor' => 'API\VendorController'
+]
+);
+Route::apiResources([
+'purchaseorder' => 'API\PurchaseorderController'
+]
+);
+Route::apiResources([
+'purchaseitem' => 'API\PurchaseitemController'
+]
+);
+
+Route::apiResources([
+'purchaseaccount' => 'API\PurchaseaccountController'
+]
+);
+
+Route::apiResources([
+'discount' => 'API\DiscountController'
+]
+);
+Route::apiResources([
+'tax' => 'API\TaxController'
+]
+);
+Route::apiResources([
+'deliveryagent' => 'API\DeliveryagentController'
+]
+);
+Route::apiResources([
+'salesorder' => 'API\SalesorderController'
+]
+);
+Route::apiResources([
+'salesitem' => 'API\SalesorderitemController'
+]
+);
+
+Route::apiResources([
+'salesaccount' => 'API\SalesorderaccountController'
+]
+);
+Route::apiResources([
+'salesordercomment' => 'API\SalesordercommentController'
+]
+);
+Route::apiResources([
+'variationlabel' => 'API\VariationlabelController'
+]
+);
+Route::apiResources([
+'variation' => 'API\VariationController'
+]
+);
+
 Route::post('/getuser', 'API\UserController@getuser');
 Route::post('/vuelogin', 'Auth\LoginController@vuelogin');
 Route::post('/vueloginadmin', 'Auth\LoginController@vueloginadmin');
 Route::post('/adminuserlogin', 'Auth\LoginController@adminuserlogin');
 Route::get('/logout', 'Auth\LoginController@logout');
-Route::post('/logout', 'Auth\LoginController@logout');
+//Route::post('/logout', 'Auth\LoginController@logout');
 
+//Route::get('/companylist', 'API\CompanyController@index');
 Route::get('/getcompany', 'API\UserController@getcompany');
+
 Route::get('/getbranchcontactperson', 'API\UserController@getbranchcontactperson');
 Route::get('/getbusinesscategory', 'API\CategoryController@getbusinesscategory');
 Route::post('/updateprofile/{id}', 'API\UserController@updateprofile');
@@ -98,6 +218,13 @@ Route::get('/getinventorygroup', 'API\GroupcodeController@getinventorygroup');
 Route::post('/purchaseOrderReport', 'API\PurchaseorderController@purchaseOrderReport');
 Route::post('/getordernumber', 'API\PurchaseorderController@getordernumber');
 Route::get('/getcustomercommunication/{id}', 'API\CommunicationController@getcustomercommunication');
+Route::get('/getsubactivity', 'API\CommunicationController@getsubactivity');
+Route::post('/createsubcommunication', 'API\CommunicationController@createsubcommunication');
+Route::get('/getcurrentactivity', 'API\CommunicationController@getcurrentactivity');
+Route::post('/searchActivity', 'API\CommunicationController@searchActivity');
+
+
+
 
 Route::post('/changeUserPasswordadmin1', 'API\UserController@changeUserPasswordAdmin1');
 
@@ -105,8 +232,15 @@ Route::get('/test', function() {
     return auth::user();
 });
 
-Route::get('/', function () {
+Route::get('/', function (Request $request) {
     //return view('welcome');
+  //  Log::info( "REQUEST MUJIBRU ===>" . $request);
+  // $value = $request->cookie('XSRF-TOKEN');
+  //  echo $value;
+  //  Log::info( "REQUEST value ===>" . $value);
+    //Cookie: XSRF-TOKEN=b3UxNzOC3BCmcVO7tYD2mAatOAgR61Idk8y3N2yJ;
+    //laravel_session=FeCQ6aumU88JicIAX1Hil5Epk32EGGkHOEorF049
+
     return view('master');
 });
 

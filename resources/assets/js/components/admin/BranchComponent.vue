@@ -156,7 +156,7 @@
 					 
 				},
 				updateBranch(){
-					 this.form.put('api/branch/'+this.form.id)
+					 this.form.put('/branch/'+this.form.id)
 							 .then(()=>{
 
 									 Toast.fire({
@@ -183,7 +183,7 @@
 					if (typeof page === 'undefined') {
 						page = 1;
 					}
-					axios.get('api/branch?page=' + page)
+					axios.get('/branch?page=' + page)
 						.then( data =>{
 							console.log("data =>", data);
 							this.branchlist = data.data
@@ -207,7 +207,7 @@
 
 						this.$Progress.start()
 
-						this.form.post('api/branch')
+						this.form.post('/branch')
 								.then((response) => {
 										console.log("response:",response.data);
 										if(response.data === '')
@@ -252,7 +252,7 @@
 
 							if (result.value) {
 								//Send Request to server
-								this.form.delete('api/branch/'+id)
+								this.form.delete('/branch/'+id)
 										.then((response)=> {
 														Swal.fire(
 															'Inactive!',

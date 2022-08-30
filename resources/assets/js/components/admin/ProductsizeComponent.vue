@@ -109,7 +109,7 @@
            this.form.fill(prsize)
         },
         updateSize(){
-           this.form.put('api/productsize/'+this.form.id)
+           this.form.put('/productsize/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -142,16 +142,16 @@
              page = 1;
              }
               let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-              //console.log("props=",this.userData.remember_token);
-          axios.get('api/productsize?page=' + page,{headers}).then( data => (this.productsizes = data.data));
+              //console.log("props=",this.userData.remember_user);
+          axios.get('/productsize?page=' + page,{headers}).then( data => (this.productsizes = data.data));
           //console.log("data",this.categories);
         },
         createSize(){
           
             this.$Progress.start()
-            this.form.post('api/productsize')
+            this.form.post('/productsize')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -190,7 +190,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/productsize/'+id)
+                this.form.delete('/productsize/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -221,7 +221,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/productsize/'+id)
+                this.form.delete('/productsize/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Active!',

@@ -112,7 +112,7 @@
            this.form.fill(thana)
         },
         updateThana(){
-           this.form.put('api/thanalist/'+this.form.id)
+           this.form.put('/thanalist/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -144,7 +144,7 @@
           if (typeof page === 'undefined') {
              page = 1;
              }
-          axios.get('api/thanalist?page=' + page).then( data => (this.thanalists = data.data));
+          axios.get('/thanalist?page=' + page).then( data => (this.thanalists = data.data));
           console.log("data=",this.thanalists);
         },
          loadDistricts() {
@@ -156,7 +156,7 @@
         },
         createThana(){
             this.$Progress.start()
-            this.form.post('api/thanalist')
+            this.form.post('/thanalist')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -195,7 +195,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/thanalist/'+id)
+                this.form.delete('/thanalist/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -226,7 +226,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/thanalist/'+id)
+                this.form.delete('/thanalist/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Active!',

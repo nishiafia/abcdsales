@@ -82,14 +82,14 @@
                 <form @submit.prevent="editMode ? updateCompany() : createCompany()">
                   <div class="modal-body">
                     <div class="form-group">
-                      <label for="business">Company Name</label>
+                      <label for="business">Company Name <span class="required-sign">*</span></label>
                       <input v-model="form.companyname" type="text" name="companyname"
                       placeholder="Company Name"
                       class="form-control" :class="{ 'is-invalid': form.errors.has('companyname') }" required>
                       <has-error :form="form" field="companyname"></has-error>
                     </div>
                     <div class="form-group">
-                      <label for="business">Business Category</label>
+                      <label for="business">Business Category <span class="required-sign">*</span></label>
                       <select name="businesscategory" v-model="form.businesscategory" id="businesscategory" class="form-control" :class="{ 'is-invalid': form.errors.has('businesscategory') }" required>
                       <option v-for="bcategory in categories" v-bind:value="bcategory.id" :key="bcategory.id">
                       {{ bcategory.categoryname }}
@@ -98,7 +98,7 @@
                       <has-error :form="form" field="businesscategory"></has-error>
                     </div>
                     <div class="form-group" >
-                      <label for="country">Country</label>
+                      <label for="country">Country <span class="required-sign">*</span></label>
                       <input v-model="form.country" type="text" name="country" id="country" 
                       class="form-control" :class="{ 'is-invalid': form.errors.has('country') }" readonly required>
                       <has-error :form="form" field="country"></has-error>
@@ -106,7 +106,7 @@
 
 
                     <div class="form-group">
-                      <label for="city">Area</label>
+                      <label for="city">Area <span class="required-sign">*</span></label>
                       <select name="thanaid" v-model="form.thanaid" id="thanaid" class="form-control" :class="{ 'is-invalid': form.errors.has('thanaid') }" required>
                       <option v-for="thana in cities" v-bind:value="thana.id" :key="thana.id">
                       {{ thana.thananame }}
@@ -115,12 +115,12 @@
                       <has-error :form="form" field="thanaid"></has-error>
                     </div>
                     <div class="form-group">
-                      <label for="address">Address Detail</label>
+                      <label for="address">Address Detail <span class="required-sign">*</span></label>
                       <textarea v-model="form.address" name="address" class="form-control"  :class="{ 'is-invalid': form.errors.has('address') }" required ></textarea>
                       <has-error :form="form" field="address"></has-error>
                     </div>
                     <div class="form-group">
-                      <label for="city">Type of Company</label>
+                      <label for="city">Type of Company <span class="required-sign">*</span></label>
                       <select name="companytype" v-model="form.companytype" id="companytype" class="form-control" :class="{ 'is-invalid': form.errors.has('companytype') }" required>
                       <option v-for="ctype in types" v-bind:value="ctype.id" :key="ctype.id">
                       {{ ctype.typename }}
@@ -161,8 +161,8 @@ import moment from 'moment';
                 totalcompany: 0,
                 teamcompanyid:this.userData.companyid,
                 teamcompanies:{},
-                currentdate:  moment().format("Y/M/D"),
-                subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+                currentdate:  moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                 form: new Form({
                     id: '',
                     companyname : '',
@@ -203,7 +203,7 @@ import moment from 'moment';
           }
         },
         updateCompany(){
-           this.form.put('api/companylist/'+this.form.id)
+           this.form.put('/companylist/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
@@ -220,11 +220,12 @@ import moment from 'moment';
                })
         },
         openModalWindow(){
-             console.log("com=",this.userData.companylimit);
+             console.log("currentdate=",this.currentdate);
              this.totalcompany=this.companies.length;
-             console.log("totalcompany=",this.totalcompany);
-             if(this.currentdate<= this.subsdate && this.userData.subscriptionstatus === 1)
+             console.log("subsdate=",this.subsdate);
+             if(this.currentdate <= this.subsdate && this.userData.subscriptionstatus === 1)
             {
+              console.log("com33333333333=",this.userData.companylimit);
               if(this.totalcompany < this.userData.companylimit){
                 this.editMode = false
                 this.shouldDisable =false
@@ -256,9 +257,9 @@ import moment from 'moment';
 
         loadCompany() {
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-          axios.get("api/companylist", {headers})
+          axios.get("/companylist", {headers})
           .then( data =>{
               console.log("company =>", data);
               this.companies = data.data
@@ -283,7 +284,7 @@ import moment from 'moment';
 
             this.$Progress.start()
 
-            this.form.post('api/companylist')
+            this.form.post('/companylist')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -330,7 +331,7 @@ import moment from 'moment';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/companylist/'+id)
+                this.form.delete('/companylist/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',
@@ -361,7 +362,7 @@ import moment from 'moment';
           },
            loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -371,7 +372,7 @@ import moment from 'moment';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

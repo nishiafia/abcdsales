@@ -244,7 +244,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
            
         },
         updateUser(){
-           this.form.put('api/user/'+this.form.id)
+           this.form.put('/user/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
@@ -269,12 +269,12 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
         loadUsers(page) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           if (typeof page === 'undefined') {
              page = 1;
              }
-        axios.get('api/user?page=' + page,{headers})
+        axios.get('/user?page=' + page,{headers})
        .then( data =>{
             this.users = data.data;
          console.log("userlist=",this.users);
@@ -293,7 +293,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
             this.$Progress.start()
 
-            this.form.post('api/user')
+            this.form.post('/user')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -338,7 +338,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/user/'+id)
+                this.form.delete('/user/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

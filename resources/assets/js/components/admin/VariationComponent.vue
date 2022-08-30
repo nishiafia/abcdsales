@@ -141,7 +141,7 @@
            this.form.fill(varationl)
         },
         updateVariation(){
-           this.form.put('api/variation/'+this.form.id)
+           this.form.put('/variation/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -174,14 +174,14 @@
              page = 1;
              }
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-          axios.get('api/variation?page=' + page,{headers}).then( data => (this.variationlabels = data.data));
+          axios.get('/variation?page=' + page,{headers}).then( data => (this.variationlabels = data.data));
           //console.log("data",this.categories);
         },
          loadVariationlLabel() {
            let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getvariationlabel",{headers})
           .then( data =>{
@@ -193,7 +193,7 @@
         createVariation(){
           
             this.$Progress.start()
-            this.form.post('api/variation')
+            this.form.post('/variation')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -232,7 +232,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/variation/'+id)
+                this.form.delete('/variation/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -263,7 +263,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/variation/'+id)
+                this.form.delete('/variation/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Active!',
@@ -284,7 +284,7 @@
           },
           loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -294,7 +294,7 @@
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

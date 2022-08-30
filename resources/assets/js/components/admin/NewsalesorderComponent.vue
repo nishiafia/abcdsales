@@ -514,8 +514,8 @@ import moment from 'moment';
                 customerid: '',
                 deliverydate: '',
                 currentdate:  new Date(),
-                currentdate1:  moment().format("Y/M/D"),
-                subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+                currentdate1:  moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                 duedeliverydate: '',
                 refso: 0,
                 agentid:'',
@@ -626,7 +626,7 @@ import moment from 'moment';
 
           getSearchList () {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
           axios.get("/getcustomer",{headers}).then( response => {
           console.log("customerlist=",response.data)
@@ -770,7 +770,7 @@ import moment from 'moment';
             }*/
 
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
 
             if(target !=0){
@@ -814,7 +814,7 @@ import moment from 'moment';
               let target = parseInt(event.target.value);
               let deliveryarea=this.deliveryarea;
               let headers = {
-              "Sessionkey": this.userData.remember_token,
+              "Sessionkey": this.userData.remember_user,
              // "DelArea": deliveryarea,
               }
               console.log("agent=>", target,deliveryarea);
@@ -847,7 +847,7 @@ import moment from 'moment';
               let target=this.agentid;
               console.log("agent=>", target,deliveryarea);
               let headers = {
-              "Sessionkey": this.userData.remember_token,
+              "Sessionkey": this.userData.remember_user,
              // "DelArea": deliveryarea,
               }
               console.log("agent=>", target,deliveryarea);
@@ -891,7 +891,7 @@ import moment from 'moment';
           },
           loadDeliveryAgent() {
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get('/getagent',{headers}).then( response => (this.agents = response.data));
             //console.log("vendor=", this.vendors);
@@ -899,14 +899,14 @@ import moment from 'moment';
 
            loadItem() {
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get('/getsalesitem',{headers}).then( data => (this.items = data.data));
             //console.log("vendor=", this.vendors);
           },
         loadExcategory() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getexcat",{headers})
             .then( data =>{
@@ -916,7 +916,7 @@ import moment from 'moment';
         },
         loadDiscount() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getdiscount",{headers})
             .then( data =>{
@@ -926,7 +926,7 @@ import moment from 'moment';
         },
         loadTax() {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/gettax",{headers})
             .then( data =>{
@@ -943,7 +943,7 @@ import moment from 'moment';
         },
         loadRefSo(cid) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getrefso/"+cid,{headers})
             .then( response =>{
@@ -955,7 +955,7 @@ import moment from 'moment';
 
             this.$Progress.start()
 
-            this.form.post('api/customer')
+            this.form.post('/customer')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -993,7 +993,7 @@ import moment from 'moment';
           },
            createAgent(){
             this.$Progress.start()
-            this.formagent.post('api/deliveryagent')
+            this.formagent.post('/deliveryagent')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -1029,7 +1029,7 @@ import moment from 'moment';
           },
           createSalesorder: function (e) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             if(this.currentdate1 <= this.subsdate && this.userData.subscriptionstatus === 1) 
             {
@@ -1044,7 +1044,7 @@ import moment from 'moment';
                   Fire.$emit('AfterCreatedVendorLoadIt'); //custom events
                   Toast.fire({
                   icon: 'error',
-                  title: 'Sorry you have no authorization!! \n Please contact to admin for access.'
+                  title: 'Sorry you have no authorization!! \n Please contact our support 09638010100 \n to unlock your access.'
                 })
                 }
                 else{
@@ -1065,13 +1065,13 @@ import moment from 'moment';
             else{
                 Toast.fire({
                 icon: 'error',
-                title: 'Sorry your membership expired !! \n Please contact to admin for access.'
+                title: 'Sorry your membership expired !! \n Please contact our support 09638010100 \n to unlock your access.'
                 })
             }
           },
            loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -1081,7 +1081,7 @@ import moment from 'moment';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

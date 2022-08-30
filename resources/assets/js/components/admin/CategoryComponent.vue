@@ -174,7 +174,7 @@
            this.form.fill(businesscategory)
         },
         updateCategory(){
-           this.form.put('api/category/'+this.form.id)
+           this.form.put('/category/'+this.form.id)
                .then((response)=>{
                   console.log("response:",response.data);
                  if(response.data === '')
@@ -206,13 +206,13 @@
           if (typeof page === 'undefined') {
              page = 1;
              }
-          axios.get('api/category?page=' + page).then( data => (this.categories = data.data));
+          axios.get('/category?page=' + page).then( data => (this.categories = data.data));
           //console.log("data",this.categories);
         },
         createCategory(){
           
             this.$Progress.start()
-            this.form.post('api/category')
+            this.form.post('/category')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -251,7 +251,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/category/'+id)
+                this.form.delete('/category/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -282,7 +282,7 @@
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/category/'+id)
+                this.form.delete('/category/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Active!',

@@ -26,3 +26,13 @@ Vue.filter('toCurrency', function (value) {
     });
     return formatter.format(value);
 });
+
+Vue.filter("truncate", function(value) {
+
+    //return moment(date).format('MMMM Do YYYY');
+        if (value && value.length> 50) {
+            value = value.substring(0, 45) + '...';
+        }
+        return value
+
+});

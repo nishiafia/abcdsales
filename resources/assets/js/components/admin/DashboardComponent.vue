@@ -17,19 +17,19 @@
               </table>
             </div>
             <div class="page-header">
-              <h2>{{ title }} </h2>
+              <h2>{{ title }}</h2>
             </div>
             <div class="card-body table-responsive p-0">
               <p>{{ text }}</p>
               <div>
             <div v-if="this.userData.subscriptiondate === null && this.userData.usertype !== 'superadmin'" class="firstcompany">Please contact our support 09638010100 to unlock your access!</div>
             <div v-else-if="this.userData.companyid === 0 && this.userData.usertype !== 'superadmin'" class="firstcompany">You Need To Add Your Company First for All Access!!</div>
-             <div v-else-if="currentdate >= subsdate && this.userData.usertype !== 'superadmin'" class="firstcompany">
+             <div v-else-if="this.currentdate > this.subsdate && this.userData.usertype !== 'superadmin'" class="firstcompany">
             <p class="unaccess">Sorry your membership expired !!</p>
             <p >Please contact our support <span class="supportcontact">09638010100</span>   to unlock your access!</p>
              </div>
             <div v-else-if="this.userData.usertype === 'superadmin'" class="firstcompany"></div>
-             <div v-else="currentdate <= subsdate && this.userData.usertype !== 'superadmin'" class="mt-5">
+             <div v-else="this.currentdate <= this.subsdate && this.userData.usertype !== 'superadmin'" class="mt-5">
                 <div id="a" class="divSquare"><div class="squaretext"><h1>0</h1><span> Total Sales</span></div></div>
                 <div id="b" class="divSquare"><div class="squaretext"><h1>2</h1><span> Total Expenses</span></div></div>
                 <div id="c" class="divSquare"><div class="squaretext"><h1>10</h1><span> Total Products</span></div></div>
@@ -80,24 +80,25 @@ import moment from 'moment';
         name: 'Dashboard',
         props: ['userData'],
         mounted() {
-            console.log(this.userData['id'])
-             console.log('Mounted')
+          // Fire.$emit('AfterCreatedDashboradLoadIt');
+           // console.log(this.userData)
+           //  console.log('Mounted')
         },
          data() {
             return {
              title: 'Dashboard',
-             text: 'Welcome to ABCD Sales System',
+             text: 'ABCD Sales Cloud Software',
              renderComponent: true,
              teamcompanyid:this.userData.companyid,
              teamcompanies:{},
-              currentdate: moment().format("Y/M/D"),
-              subsdate: moment(this.userData.subscriptiondate).format("Y/M/D"),
+             currentdate: moment().unix(),
+             subsdate: moment(this.userData.subscriptiondate).unix(),
             }
         },
          methods: {
             loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -107,7 +108,7 @@ import moment from 'moment';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})
@@ -120,6 +121,9 @@ import moment from 'moment';
          },
           created() {
           this.loadSwitchCompany();
+          Fire.$on('AfterCreatedDashboradLoadIt',()=>{ //custom events fire on
+                //this.loadUsers();
+            });
     }
     }
 </script>

@@ -2,7 +2,7 @@
     @if(Auth::user()->usertype === 'superadmin')
     <div class="sidebar-header">
       <h3><?php 
-        //print_r(Auth::user()->remember_token);
+        //print_r(Auth::user()->remember_user);
         print Auth::user()->name; $uId=Auth::user()->id; //echo session('_token'); ?></h3>
     </div>
       <nav class="mt-2">
@@ -69,7 +69,7 @@
       @if(Auth::user()->usertype === 'basic' || Auth::user()->usertype === 'standard' || Auth::user()->usertype === 'professional')
       <div class="sidebar-header">
         <h3><?php
-          //print_r(Auth::user()->remember_token);
+          //print_r(Auth::user()->remember_user);
          // print Auth::user()->subscriptiondate;
           print Auth::user()->name; $uId=Auth::user()->id; //echo session('_token'); ?></h3>
       </div>
@@ -471,7 +471,7 @@
       @if(Auth::user()->usertype === 'team')
       <div class="sidebar-header">
         <h3><?php 
-          //print_r(Auth::user()->remember_token);
+          //print_r(Auth::user()->remember_user);
           print Auth::user()->name; $uId=Auth::user()->id; //echo session('_token'); ?></h3>
       </div>
       <nav class="mt-2">

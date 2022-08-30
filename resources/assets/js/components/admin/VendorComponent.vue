@@ -198,7 +198,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
            
         },
         updateVendor(){
-           this.form.put('api/vendor/'+this.form.id)
+           this.form.put('/vendor/'+this.form.id)
                .then((response)=>{
 
                   if(response.data === '')
@@ -234,9 +234,9 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             page = 1;
             }
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
-            axios.get('api/vendor?page=' + page, {headers})
+            axios.get('/vendor?page=' + page, {headers})
             .then( data =>{
                 this.vendors = data.data
             });
@@ -250,7 +250,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
             this.$Progress.start()
 
-            this.form.post('api/vendor')
+            this.form.post('/vendor')
                 .then((response) => {
                     console.log("response:",response.data);
                     if(response.data === '')
@@ -297,7 +297,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/vendor/'+id,{headers})
+                this.form.delete('/vendor/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Inactive!',
@@ -331,7 +331,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             }).then((result) => {
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/vendor/'+id,{headers})
+                this.form.delete('/vendor/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Active!',
@@ -366,7 +366,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/vendor/'+id,{headers})
+                this.form.delete('/vendor/'+id,{headers})
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

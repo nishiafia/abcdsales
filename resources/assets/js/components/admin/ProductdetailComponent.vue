@@ -107,7 +107,7 @@
                 pcolors: {},
                 psizes: {},
                 ptypes: {},
-                sysid: this.userData.remember_token ,
+                sysid: this.userData.remember_user ,
                 teamcompanyid:this.userData.companyid,
                 teamcompanies:{}, 
                
@@ -138,7 +138,7 @@
            
         },
         updateProduct(){
-           this.form.put('api/product/'+this.form.id)
+           this.form.put('/product/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
@@ -163,9 +163,9 @@
 
         loadProduct() { 
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
-          axios.get("api/product/"+this.pid, {headers})
+          axios.get("/product/"+this.pid, {headers})
           .then( response =>{
               console.log("products =>", response.data);
               this.products = response.data
@@ -176,7 +176,7 @@
         },
       loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -186,7 +186,7 @@
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

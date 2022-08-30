@@ -15,14 +15,32 @@ use Illuminate\Support\Facades\Hash;
 //use Illuminate\Support\Facades\Mail;
 use Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
 
     public function index(Request $request)
     {
+       
         $systemid = base64_decode($request->header('sessionKey'));
         $userinfo = User::where('id', $systemid)->first();
+        $auser=Auth::user();
+       // Log::info( "authnnnnnnnnnnnn ===>" . $auser);
+        $now = Carbon::now();
+        $last_seen = Carbon::parse($userinfo->last_seen_at);
+        $absence = $last_seen->diffInMinutes($now,true);
+        Log::info( "absence ===>" . $absence);
+        if($absence > config('session.lifetime')) {
+            User::where('id', $userinfo->id)->update(['islogin' => 0]);
+
+           Auth::logout();
+           return response()->json([
+            'mgs' => 'logout'
+           ]);
+       }
+       else{
         if($userinfo->usertype == 'superadmin')
         {
         /*return User::with(array('systemname'=>function($query){
@@ -33,10 +51,26 @@ class UserController extends Controller
         else{
             return User::orderby('id', 'asc')->get();
          }
+        }
     }
 
     public function store(Request $request)
     {
+        $auser=Auth::user();
+        // Log::info( "authnnnnnnnnnnnn ===>" . $auser);
+         $now = Carbon::now();
+         $last_seen = Carbon::parse($auser->last_seen_at);
+         $absence = $last_seen->diffInMinutes($now,true);
+         //Log::info( "absence ===>" . $absence);
+         if($absence > config('session.lifetime')) {
+             User::where('id', $auser->id)->update(['islogin' => 0]);
+ 
+            Auth::logout();
+            return response()->json([
+             'mgs' => 'logout'
+            ]);
+        }
+        else{
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required',
@@ -103,23 +137,39 @@ class UserController extends Controller
         Mail::send([], ['data' => $data], function($message) use ($data) {
            // $message->to('team@abcdsales.com.bd', 'ABCD Sales')->subject('New Member Signup Notification');
           $message->to('nishi9004@gmail.com', 'ABCD Sales')->subject('New Member Signup Notification');
-        // $message->from("afia.rahman2010@gmail.com",'ABCD Sales');
+           $message->from("noreply@abcdsales.com.bd",'ABCD Sales');
             $message->setBody('<h3>Below New User Registered in ABCD Sales System</h3><p>Name: '.$data['name'].' </p><p>Phone: '.$data['phone'].'</p><p> Email: '.$data['memail'].'</p><p> Package: '.$data['package'].'</p>','text/html');
         });
         // Email Send To User
         Mail::send([], ['data' => $data], function($message) use ($data) {
             // $message->to('team@abcdsales.com.bd', 'ABCD Sales')->subject('New Member Signup Notification');
            $message->to($data['memail'], 'ABCD Sales')->subject('Registration Successful');
-         // $message->from("afia.rahman2010@gmail.com",'ABCD Sales');
+           $message->from("noreply@abcdsales.com.bd",'ABCD Sales');
              $message->setBody('<h3>Welcome to ABCD Sales System</h3><p>Name: '.$data['name'].' </p><p>Phone: '.$data['phone'].'</p><p> Email: '.$data['memail'].'</p><p> Password: '.$data['pass'].'</p><p> Package: '.$data['package'].'</p><p> Login Url: '.$data['logurl'].'</p><p style="text-align:center"> Copyright: '.$data['courl'].'</p>','text/html');
          });
 
         return  $usercreate;
       }
     }
+    }
 
     public function storeTeam(Request $request)
     {
+        $auser=Auth::user();
+        // Log::info( "authnnnnnnnnnnnn ===>" . $auser);
+         $now = Carbon::now();
+         $last_seen = Carbon::parse($auser->last_seen_at);
+         $absence = $last_seen->diffInMinutes($now,true);
+         //Log::info( "absence ===>" . $absence);
+         if($absence > config('session.lifetime')) {
+             User::where('id', $auser->id)->update(['islogin' => 0]);
+ 
+            Auth::logout();
+            return response()->json([
+             'mgs' => 'logout'
+            ]);
+        }
+        else{
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required',
@@ -159,7 +209,7 @@ class UserController extends Controller
             User::where('id', $userID)->update(['companylimit' =>$companylimit,'entrylimit' => $entrylimit,'subscriptionstartdate' => $subscriptionstartdate, 'subscriptiondate' => $subscriptiondate,'teamlimit' => $teamlimit,'orderlimit' => $orderlimit]);
             return  $userID;
         }
-    // }
+     }
     }
     public function saveTeamCompany(Request $request)
     {
@@ -191,6 +241,24 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        $systemid = base64_decode($request->header('sessionKey'));
+        $userinfo = User::where('id', $systemid)->first();
+
+        $auser=Auth::user();
+         Log::info( "authnhh ===>" .$auser->id);
+         $now = Carbon::now();
+         $last_seen = Carbon::parse($userinfo->last_seen_at);
+         $absence = $last_seen->diffInMinutes($now,true);
+         Log::info( "absence ===>" . $absence);
+         if($absence > config('session.lifetime')) {
+             User::where('id', $auser->id)->update(['islogin' => 0]);
+ 
+            Auth::logout();
+            return response()->json([
+             'mgs' => 'logout'
+            ]);
+        }
+        else{
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required',
@@ -202,7 +270,7 @@ class UserController extends Controller
        // $datefrom=date('Y-m-d', strtotime($request['deliverydate']));
         $user->update($request->all());
         $status = $request->header('StatusKey');
-        $adminuserpassword=Hash::make('@ABCU789');
+       // $adminuserpassword=Hash::make('@ABCU789');
         Log::info( "status ===>" . $status);
         if($status === 'team')
         {
@@ -218,15 +286,16 @@ class UserController extends Controller
            // Log::info( "usertype ===>" .$request['usertype']);
             User::where('id', $request['id'])->update(['companylimit' =>$companylimit,'entrylimit' => $entrylimit, 'subscriptiondate' => $subscriptiondate,'subscriptionstartdate' => $subscriptionstartdate,'teamlimit' => $teamlimit,'orderlimit' => $orderlimit,'adminuserpassword' =>$adminuserpassword]);
         }
-        else{
-            Log::info( "status ===>" . $status);
-            Log::info( "adminuserpassword ===>" . $adminuserpassword);
-            User::where('id', $request['id'])->update(['adminuserpassword' =>$adminuserpassword]);
-        }
+        return response()->json([
+            'mgs' => 'success'
+           ]);
+    }
+       
     }
 
     public function destroy(Request $request,$id)
     {
+       
         $status = $request->header('StatusKey');
         Log::info( "Status ===>" . $status);
         $user = User::findOrFail($id);
@@ -242,10 +311,12 @@ class UserController extends Controller
         if($status === 'del')
         {
         $user->delete();
-        return response()->json([
-         'message' => 'User deleted successfully'
-        ]);
+        
         }
+        return response()->json([
+            'mgs' => 'success'
+           ]);
+    
     }
 
     public function getteam(Request $request)

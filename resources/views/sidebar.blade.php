@@ -3,7 +3,7 @@
         @if(Auth::user()->usertype === 'superadmin')
             <div class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                 <span class="sidebar-header fs-5 d-none d-sm-inline">
-                    <?php print Auth::user()->name; $uId=Auth::user()->id; ?>
+                    Your Menu <?php  $uId=Auth::user()->id; ?>
                 </span>
             </div>
             <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
@@ -67,7 +67,8 @@
         @if(Auth::user()->usertype === 'basic' || Auth::user()->usertype === 'standard' || Auth::user()->usertype === 'professional')
             <div class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                 <span class="sidebar-header fs-5 d-none d-sm-inline">
-                    <?php print Auth::user()->name; $uId=Auth::user()->id; ?>
+                    Your Menu<?php //print Auth::user()->name;
+                    $uId=Auth::user()->id; ?>
                 </span>
             </div>
          <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
@@ -89,6 +90,14 @@
                 <span class="ms-1 d-none d-sm-inline">Company</span>
               </router-link>
               @endif
+            </li>
+            <li>
+           
+              <router-link :to="'/fileupload'" class="nav-link align-middle px-0">
+                <i class="fa fa-building-o" aria-hidden="true"></i>
+                <span class="ms-1 d-none d-sm-inline">Fileupload</span>
+              </router-link>
+            
             </li>
             <li>
             @if(Auth::user()->companyid === 0)
@@ -220,12 +229,16 @@
                   @if(Auth::user()->companyid === 0)
                   <router-link :to="'/dashboard'" class="nav-link align-middle px-0">
                   <i class="fa fa-indent" aria-hidden="true"></i>
-                  <span class="ms-1 d-none d-sm-inline">Incoming</span>
+                  <span class="ms-1 d-none d-sm-inline">Incoming
+                  <img src="images/pro.jpg" class="proclass">
+                  </span>
                   </router-link>
                   @else
                   <router-link :to="'/incomingpayment'" class="nav-link align-middle px-0">
                   <i class="fa fa-indent" aria-hidden="true"></i>
-                    <span class="ms-1 d-none d-sm-inline">Incoming</span>
+                    <span class="ms-1 d-none d-sm-inline">Incoming
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @endif
                 </li>
@@ -233,12 +246,16 @@
                 @if(Auth::user()->companyid === 0)
                   <router-link :to="'/dashboard'" class="nav-link align-middle px-0">
                   <i class="fa fa-outdent" aria-hidden="true"></i>
-                  <span class="ms-1 d-none d-sm-inline">Outgoing</span>
+                  <span class="ms-1 d-none d-sm-inline">Outgoing
+                  <img src="images/pro.jpg" class="proclass">
+                  </span>
                   </router-link>
                   @else
                   <router-link :to="'/outgoingpayment'" class="nav-link align-middle px-0">
                   <i class="fa fa-outdent" aria-hidden="true"></i>
-                    <span class="ms-1 d-none d-sm-inline">Outgoing</span>
+                    <span class="ms-1 d-none d-sm-inline">Outgoing
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @endif
                 </li>
@@ -254,12 +271,16 @@
                   @if(Auth::user()->companyid === 0)
                   <router-link :to="'/dashboard'" class="nav-link align-middle px-0">
                   <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                  <span class="ms-1 d-none d-sm-inline">Sales</span>
+                  <span class="ms-1 d-none d-sm-inline">Sales
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @else
                   <router-link :to="'/salesreport'" class="nav-link align-middle px-0">
                    <i class="fa fa-cloud-upload" aria-hidden="true"></i>
-                    <span class="ms-1 d-none d-sm-inline">Sales</span>
+                    <span class="ms-1 d-none d-sm-inline">Sales
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @endif
                 </li>
@@ -267,12 +288,16 @@
                 @if(Auth::user()->companyid === 0)
                   <router-link :to="'/dashboard'" class="nav-link align-middle px-0">
                   <i class="fa fa-product-hunt" aria-hidden="true"></i>
-                  <span class="ms-1 d-none d-sm-inline">Purchase</span>
+                  <span class="ms-1 d-none d-sm-inline">Purchase
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @else
                   <router-link :to="'/purchaseorderreport'" class="nav-link align-middle px-0">
                   <i class="fa fa-product-hunt" aria-hidden="true"></i>
-                    <span class="ms-1 d-none d-sm-inline">Purchase</span>
+                    <span class="ms-1 d-none d-sm-inline">Purchase
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @endif
                 </li>
@@ -280,12 +305,16 @@
                 @if(Auth::user()->companyid === 0)
                   <router-link :to="'/dashboard'" class="nav-link align-middle px-0">
                   <i class="fa fa-money" aria-hidden="true"></i>
-                  <span class="ms-1 d-none d-sm-inline">Inventory</span>
+                  <span class="ms-1 d-none d-sm-inline">Inventory
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @else
                   <router-link :to="'/inventoryreport'" class="nav-link align-middle px-0">
                   <i class="fa fa-money" aria-hidden="true"></i>
-                    <span class="ms-1 d-none d-sm-inline">Inventory</span>
+                    <span class="ms-1 d-none d-sm-inline">Inventory
+                    <img src="images/pro.jpg" class="proclass">
+                   </span>
                   </router-link>
                   @endif
                 </li>
@@ -293,12 +322,16 @@
                 @if(Auth::user()->companyid === 0)
                   <router-link :to="'/dashboard'" class="nav-link align-middle px-0">
                   <i class="fa fa-money" aria-hidden="true"></i>
-                  <span class="ms-1 d-none d-sm-inline">Transaction</span>
+                  <span class="ms-1 d-none d-sm-inline">Transaction
+                    <img src="images/pro.jpg" class="proclass">
+                   </span>
                   </router-link>
                   @else
                   <router-link :to="'/transactionreport'" class="nav-link align-middle px-0">
                   <i class="fa fa-money" aria-hidden="true"></i>
-                    <span class="ms-1 d-none d-sm-inline">Transaction</span>
+                    <span class="ms-1 d-none d-sm-inline">Transaction
+                    <img src="images/pro.jpg" class="proclass">
+                    </span>
                   </router-link>
                   @endif
                 </li>
@@ -448,7 +481,8 @@
         @if(Auth::user()->usertype === 'team')
             <div class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                 <span class="sidebar-header fs-5 d-none d-sm-inline">
-                    <?php print Auth::user()->name; $uId=Auth::user()->id; ?>
+                    Your Menu<?php //print Auth::user()->name;
+                     $uId=Auth::user()->id; ?>
                 </span>
             </div>
          <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">

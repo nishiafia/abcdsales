@@ -12,6 +12,10 @@ use App\Usercompany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
+//use Auth;
+
+
 
 class CompanyController extends Controller
 {
@@ -20,18 +24,43 @@ class CompanyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    use AuthenticatesUsers;
+   // use AuthenticatesUsers;
        /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+  
+    
+
     public function index(Request $request)
     {
+       Log::info( "Nishi ===>" . base64_decode($request->header('sessionKey')));
+      //  Session::flush();
+      //  Auth::logout();
+       // return redirect('/');
        // Log::info( "Nishi ===>" . base64_decode($request->header('sessionKey')));
         $systemid = base64_decode($request->header('sessionKey'));
         $userinfo = User::where('id', $systemid)->first();
+        $auser=Auth::user();
+        $now = Carbon::now();
+        $last_seen = Carbon::parse($userinfo->last_seen_at);
+        $absence = $last_seen->diffInMinutes($now,true);
+       Log::info( "authnnnnnnnnnnnn ===>" . $auser);
+        Log::info( "nowc ===>" . $now);
+        Log::info( "absencec ===>" . $absence);
+        Log::info( "last_seenc ===>" . $last_seen);
+        Log::info( "timeoutc ===>" . config('session.lifetime'));
+
+        if($absence > config('session.lifetime')) {
+            User::where('id', $userinfo->id)->update(['islogin' => 0]);
+            //Session::flush();
+           Auth::logout();
+            return redirect('/');
+           // Auth::logout();
+       }
+       else{
         if($userinfo->usertype == 'superadmin')
         {
             return Company::with('businesscategoryname')
@@ -59,6 +88,7 @@ class CompanyController extends Controller
 
         }
     }
+}
 
     /**
      * Store a newly created resource in storage.

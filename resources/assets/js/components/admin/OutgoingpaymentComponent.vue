@@ -17,10 +17,15 @@
               </table>
             </div>
           <div class="col-md-12">
-            <div class="card">
+          <div v-if="this.userData.usertype != 'professional'">
+            <p class="firstcompany"> This feature is for professional version.</p>
+ 
+            <p class="firstcompany">Please contact administrator number 09638010100 for your upgrade and access!</p>
+          </div>
+            <div class="card" v-if="this.userData.usertype === 'professional'">
               <div class="card-header">
                 
-                <h3 class="card-title">Outgoing Payments</h3>
+                <h3 class="card-title">Outgoing Transaction</h3>
                 <div>
                     <form  @submit.prevent="searchOutgoingOrder()">
                  <table class="table">
@@ -233,6 +238,7 @@
 import Datepicker from 'vuejs-datepicker';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+import moment from 'moment';
     export default {
         props: ['userData'],
         components: {  Datepicker,VuePhoneNumberInput},
@@ -257,8 +263,8 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
                 banktable: false,
                 paymentbutton:false,
                 currentpayment: true,
-                currentdate: new Date(), 
-                subsdate: new Date(this.userData.subscriptiondate),
+                currentdate: moment().unix(),
+                subsdate: moment(this.userData.subscriptiondate).unix(),
                // checkedOrders:[],
                 errors: [],
              //   payamount: [],
@@ -315,7 +321,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
           getSearchList () {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
             }
           axios.get("/getcustomer",{headers}).then( response => {
              console.log("vendorlist=",response.data)
@@ -427,13 +433,13 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
           },
        /* loadOrder(page) { 
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
           if (typeof page === 'undefined') {
             page = 1;
             }
           //console.log("token =", token);
-          axios.get('api/salesorder?page=' + page, {headers})
+          axios.get('/salesorder?page=' + page, {headers})
           .then( response =>{
               console.log("orders =>", response.data);
               this.porders = response.data
@@ -448,7 +454,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
          },
           loadCustomer() {
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get('/getcustomer',{headers}).then( data => (this.customers = data.data));
             console.log("vendor=", this.customers);
@@ -461,7 +467,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
              
         },
           createOutgoingPayment: function (e) {
-             if(this.currentdate.getTime() <= this.subsdate.getTime() && this.userData.subscriptionstatus === 1) 
+             if(this.currentdate <= this.subsdate && this.userData.subscriptionstatus === 1) 
             {
             let orders = this.porders.filter( (order) => order.checkedOrders)
             // var navigate = this.$router;
@@ -500,7 +506,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             else{
                Toast.fire({
                 icon: 'error',
-                title: 'Sorry your membership expired !! \n Please contact to admin for access.'
+                title: 'Sorry your membership expired !! \n Please contact our support 09638010100 \n to unlock your access.'
                 })
             }
           },
@@ -515,7 +521,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
               let duem = parseInt(fpd.getMonth())+1;
               form.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();*/
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             this.form.post('/searchOutgoingPayment',{headers})
                .then((response)=>{
@@ -532,7 +538,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
          
            loadSwitchCompany() {
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 axios.get('/getswitchcompany', {headers})
                 .then( response =>{
@@ -542,7 +548,7 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
             },
             switchCompany(event){
                 let headers = {
-                "Sessionkey": this.userData.remember_token,
+                "Sessionkey": this.userData.remember_user,
                 }
                 let target = parseInt(event.target.value);
                 axios.get("/updateSwitchCompany/"+target, {headers})

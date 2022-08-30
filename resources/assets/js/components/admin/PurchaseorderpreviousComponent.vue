@@ -258,13 +258,13 @@ import Datepicker from 'vuejs-datepicker';
           },
         loadOrder() { 
           let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
          /* if (typeof page === 'undefined') {
             page = 1;
             }*/
           //console.log("token =", token);
-          axios.get('api/purchaseorder', {headers})
+          axios.get('/purchaseorder', {headers})
           .then( data =>{
               console.log("orders =>", data);
               this.porders = data.data
@@ -294,14 +294,14 @@ import Datepicker from 'vuejs-datepicker';
          },
           loadVendor() {
              let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get('/getvendor',{headers}).then( data => (this.vendors = data.data));
             console.log("vendor=", this.vendors);
           },
           loadRefPo(vid) {
             let headers = {
-            "Sessionkey": this.userData.remember_token,
+            "Sessionkey": this.userData.remember_user,
           }
             axios.get("/getrefpo/"+vid,{headers})
             .then( data =>{
@@ -333,7 +333,7 @@ import Datepicker from 'vuejs-datepicker';
               let duefpd = new Date(this.formorder.duedeliverydate);
               let duem = parseInt(fpd.getMonth())+1;
               formorder.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();
-              formorder.put('api/purchaseorder/'+this.formorder.id)
+              formorder.put('/purchaseorder/'+this.formorder.id)
                .then(()=>{
                    Toast.fire({
                       icon: 'success',
@@ -358,7 +358,7 @@ import Datepicker from 'vuejs-datepicker';
               let duefpd = new Date(this.formorder.duedeliverydate);
               let duem = parseInt(fpd.getMonth())+1;
               formorder.duedeliverydate = duefpd.getFullYear() + '-' + duem + '-' + duefpd.getDate();
-              formorder.put('api/purchaseorder/'+this.formorder.id)
+              formorder.put('/purchaseorder/'+this.formorder.id)
                .then(()=>{
                    Toast.fire({
                       icon: 'success',
@@ -386,7 +386,7 @@ import Datepicker from 'vuejs-datepicker';
 
               if (result.value) {
                 //Send Request to server
-                this.form.delete('api/product/'+id)
+                this.form.delete('/product/'+id)
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',

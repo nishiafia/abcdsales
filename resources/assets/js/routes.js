@@ -45,6 +45,9 @@ import NewSignup from './components/admin/NewSignupComponent.vue'
 import Activity from './components/admin/ActivityComponent.vue'
 import ActivityDetail from './components/admin/ActivityDetailComponent.vue'
 import AdminUserPanel from './components/admin/AdminAsUserComponent.vue'
+import TransactionReport from './components/admin/TransactionReportComponent.vue'
+import SalesReport from './components/admin/SalesReportComponent.vue'
+import FileUpload from './components/admin/FileuploadComponent.vue'
 
 Vue.use(Router)
 
@@ -55,22 +58,37 @@ const router = new Router({
     {
         path:'/login',
         component:Login,
+        name: 'login',
         props: true,
+        meta: {
+          requiresAuth: false
+        }
     },
       {
           path:'/adminlogin',
           component:Adminlogin,
+          name: 'adminlogin',
           props: true,
+          meta: {
+            requiresAuth: false
+          }
       },
       {
         path:'/adminuserloginpanel',
         component:AdminUserPanel,
+        name: 'adminuserloginpanel',
         props: true,
+        meta: {
+          requiresAuth: false
+        }
     },
     {
       path:'/signup/:utype',
       component:Signup,
       props: true,
+      meta: {
+        requiresAuth: false
+      }
     },
     {
       path:'/newsignup',
@@ -124,8 +142,17 @@ const router = new Router({
       }
     },
     {
+      path:'/fileupload',
+      component:FileUpload,
+      props: true,
+      meta: {
+      requiresAuth: true
+      }
+    },
+    {
         path:'/',
         component:Home,
+        name: 'home',
         props: true,
         meta: {
           requiresAuth: false
@@ -390,6 +417,22 @@ const router = new Router({
   {
     path:'/purchaseorderreport',
     component:PurchaseOrderReport,
+    props: true,
+    meta: {
+    requiresAuth: true
+   }
+  },
+  {
+    path:'/transactionreport',
+    component:TransactionReport,
+    props: true,
+    meta: {
+    requiresAuth: true
+   }
+  },
+  {
+    path:'/salesreport',
+    component:SalesReport,
     props: true,
     meta: {
     requiresAuth: true
