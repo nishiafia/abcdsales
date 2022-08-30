@@ -1,3 +1,31 @@
+
+/*MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=null
+MAIL_FROM_NAME="${APP_NAME}"*/
+
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=nishi9004@gmail.com
+MAIL_PASSWORD="opmvwpjxcskqhyvg"
+MAIL_ENCRYPTION=tls
+MAIL_FROM_NAME="${APP_NAME}"
+
+MAIL_DRIVER=mail
+MAIL_HOST=mail.abcdsales.com.bd
+MAIL_PORT=587
+MAIL_USERNAME=noreply@abcdsales.com.bd
+MAIL_PASSWORD="no@123120?#"
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_NAME="${APP_NAME}"
+
+
+
 -- MySQL dump 10.13  Distrib 5.7.28, for Linux (x86_64)
 --
 -- Host: localhost    Database: social

@@ -20,9 +20,11 @@ class CreateUsersTable extends Migration
             $table->integer('businesscategory')->default(0);
             $table->integer('systemid')->default(0);
             $table->integer('companyid')->default(0);
-            $table->integer('partnertype')->default(0);
+            $table->integer('branchid')->default(0);
             $table->text('address')->nullable();
             $table->boolean('isactive')->default(true);
+            $table->boolean('islogin')->default(false);
+            $table->timestamp('logintime')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

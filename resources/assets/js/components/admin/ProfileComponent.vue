@@ -1,249 +1,216 @@
 <template>
     <div class="container">
         <div class="row mt-5">
+          <div class="scom">
+              <table class="switchcompany">
+                <tbody>
+                  <tr>
+                    <td class="switchlabel">Switch Company:</td>
+                    <td> <select  name="teamcompanyid" v-model="teamcompanyid"  class="form-control" v-on:change="switchCompany">
+                    <option v-for="scompany in teamcompanies" v-bind:value="scompany.teamcompanyname.id" :key="scompany.teamcompanyname.id">
+                    {{ scompany.teamcompanyname.companyname }}
+                    </option>
+                    </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Users Table</h3>
-
-                <div class="card-tools">
-                    <button class="btn btn-success" data-toggle="modal" data-target="#addNew" @click="openModalWindow">Add New <i class="fa fa-user-plus" aria-hidden="true"></i></button>
-                </div>
+                <h3 class="card-title">Profile</h3>
               </div>
-
               <div class="card-body table-responsive p-0">
-                <table class="table table-hover">
-                  <tbody>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Type</th>
-                        <th>Registered At</th>
-                        <th>Modify</th>
-                  </tr> 
-
-                  <tr v-for="user in users" :key="user.id">
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.usertype | strToUpper}}</td>
-                    <td>{{ user.created_at | formatDate}}</td>
-
-                    <td>
-                        <a href="#" data-id="user.id" @click="editModalWindow(user)">
-                            <i class="fa fa-edit blue"></i>
-                        </a>
-                        |
-                        <a href="#" @click="deleteUser(user.id)">
-                            <i class="fa fa-trash red"></i>
-                        </a>
-
-                    </td>
-                  </tr>
-                </tbody></table>
-              </div>
-
-              <div class="card-footer">
-
+                 <form @submit.prevent="updateProfile()" >
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <label for="phone">Name</label>
+                            <input v-model="form.name" type="text" name="name"
+                            placeholder="Name"
+                            class="form-control">
+                            </div>
+                            <div class="form-group">
+                            <label for="phone">Username(phone)</label>
+                            <div class="telephoneformat">Example Format: ( 01712234678 )</div>
+                         <!--VuePhoneNumberInput
+                        default-country-code="BD"
+                        name="telephone"
+                        required
+                        v-model="form.telephone"
+                        disabled
+                         :maxlength="max"
+                          @update="updatePhoneNumber"
+                         /-->
+                         <input v-model="form.telephone" type="tel" name="telephone" maxlength="11" minlength="11" required placeholder="telephone" @keypress="onlyNumber" class="form-control" >
+                          </div>
+                          <div class="form-group">
+                            <label for="phone">Email</label>
+                            <input v-model="form.email" type="email" name="email" readonly 
+                            class="form-control">
+                          </div>
+                          <!--div class="form-group">
+                        <label for="business">Business Category</label>
+                        <select name="businesscategory" v-model="form.businesscategory" id="businesscategory" class="form-control"  :disabled="this.userData.usertype === 'team'">
+                          <option value="">Select Business Categories</option>
+                          <option v-for="bcategory in categories" v-bind:value="bcategory.id" :key="bcategory.id">
+                          {{ bcategory.categoryname }}
+                          </option>
+                        </select>
+                        <has-error :form="form" field="usertype"></has-error>
+                      </div-->
+                        <div class="form-group">
+                            <label for="phone">Address</label>
+                            <input v-model="form.address" type="text" name="address"
+                            class="form-control"  :readonly="this.userData.usertype === 'team'">
+                        </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden"   name="usertype" v-model="form.usertype">
+                            <input type="hidden"   name="dialcode" v-model="form.dialcode">
+                            <input type="hidden"   name="systemid" v-model="form.systemid">
+                             <input type="hidden"   name="isactive" v-model="form.isactive">
+                        <button  type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                      </form>
               </div>
             </div>
-
           </div>
         </div>
-
-
-            <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNewLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-
-                    <h5 v-show="!editMode" class="modal-title" id="addNewLabel">Add New User</h5>
-                    <h5 v-show="editMode" class="modal-title" id="addNewLabel">Update User</h5>
-
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-<form @submit.prevent="editMode ? updateUser() : createUser()">
-<div class="modal-body">
-     <div class="form-group">
-        <input v-model="form.name" type="text" name="name"
-            placeholder="Name"
-            class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
-        <has-error :form="form" field="name"></has-error>
     </div>
-
-     <div class="form-group">
-        <input v-model="form.email" type="email" name="email"
-            placeholder="Email Address"
-            class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
-        <has-error :form="form" field="email"></has-error>
-    </div>
-
-
-    <div class="form-group" v-show="!editMode">
-        <input v-model="form.password" type="password" name="password" id="password" placeholder="Enter password"
-        class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
-        <has-error :form="form" field="password"></has-error>
-    </div>
-
-    <div class="form-group">
-        <select name="usertype" v-model="form.usertype" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('usertype') }">
-            <option value="">Select User Role</option>
-             <option value="superadmin">SuperAdmin</option>
-            <option value="admin">Admin</option>
-            <option value="company">Company</option>
-            <option value="branch">Branch</option>
-        </select>
-        <has-error :form="form" field="type"></has-error>
-    </div>
-
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-    <button v-show="editMode" type="submit" class="btn btn-primary">Update</button>
-    <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
-</div>
-
-</form>
-
-                </div>
-            </div>
-            </div>
-    </div>
-
 </template>
-
 <script>
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
     export default {
+      components: {  VuePhoneNumberInput},
+      //  props: ['id'],
+        props: ['userData'],
         data() {
             return {
-                editMode: false,
-                users: {},
-                form: new Form({
-                    id: '',
-                    name : '',
-                    email: '',
-                    password: '',
-                    usertype: '',
+              categories: {},
+              teamcompanyid:this.userData.companyid,
+              teamcompanies:{},
+              max:11,
+            form: new Form({
+                id: this.userData.id,
+                name:this.userData.name,
+                dialcode: this.userData.dialcode,
+                telephone: this.userData.telephone,
+                email: this.userData.email,
+                usertype: this.userData.usertype,
+                address: this.userData.address,
+                systemid: this.userData.systemid,
+               // businesscategory: this.userData.businesscategory,
+                companyid: this.userData.companyid,
+                isactive: this.userData.isactive,
+            })
 
-                })
             }
         },
+       /* computed: {
+          id: {
+            get: function () { return  this.userData.id },
+            set: function (newValue) { this.id = newValue}
+          },
+          name: {
+            get: function () { return  this.userData.name },
+            set: function (newValue) { this.name = newValue}
+          },
+          dialcode: {
+            get: function () { return  this.userData.dialcode },
+            set: function (newValue) { this.dialcode = newValue}
+          },
+           telephone: {
+            get: function () { return  this.userData.telephone },
+            set: function (newValue) { this.telephone = newValue}
+          },
+          email: {
+            get: function () { return  this.userData.email },
+            set: function (newValue) { this.email = newValue}
+          },
+           usertype: {
+            get: function () { return  this.userData.usertype },
+            set: function (newValue) { this.usertype = newValue}
+          },
+          address: {
+            get: function () { return  this.userData.address },
+            set: function (newValue) { this.address = newValue}
+          }
+        },*/
         methods: {
+          updatePhoneNumber(data) {
+               this.form.dialcode=data.countryCallingCode;
+               console.log("dialcode=", this.form.dialcode);
+            },
+          onlyNumber ($event) {
+          let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+          if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) { // 46 is dot
+          $event.preventDefault();
+          }
+          },
+          loadSwitchCompany() {
+                let headers = {
+                "Sessionkey": this.userData.remember_token,
+                }
+                axios.get('/getswitchcompany', {headers})
+                .then( response =>{
+                this.teamcompanies = response.data
+                console.log("teamcompany =>", this.teamcompanies);
+                });
+            },
+            switchCompany(event){
+                let headers = {
+                "Sessionkey": this.userData.remember_token,
+                }
+                let target = parseInt(event.target.value);
+                axios.get("/updateSwitchCompany/"+target, {headers})
+                .then( response =>{
+                location.reload();
+                // this.$router.go();
+                Fire.$emit('AfterCreatedUserLoadIt'); //custom events
+                });
+            },
+          loadBusinesscategory() {
+            axios.get('/getbusinesscategory').then( data => (this.categories = data.data));
+            console.log("category=", this.categories);
+          },
 
-        editModalWindow(user){
-           this.form.clear();
-           this.editMode = true
-           this.form.reset();
-           $('#addNew').modal('show');
-           this.form.fill(user)
-        },
-        updateUser(){
+        updateProfile(){
            this.form.put('api/user/'+this.form.id)
                .then(()=>{
 
                    Toast.fire({
                       icon: 'success',
-                      title: 'User updated successfully'
+                      title: 'Profile updated successfully'
                     })
 
                     Fire.$emit('AfterCreatedUserLoadIt');
 
-                    $('#addNew').modal('hide');
+                   // $('#addNew').modal('hide');
                })
                .catch(()=>{
                   console.log("Error.....")
                })
+        }
         },
-        openModalWindow(){
-           this.editMode = false
-           this.form.reset();
-           $('#addNew').modal('show');
-        },
-
-        loadUsers() {
-
-        axios.get("api/user").then( data => (this.users = data.data));
-          //data ene users object a rakhlam then loop a users print
-
-        },
-
-        createUser(){
-
-            this.$Progress.start()
-
-            this.form.post('api/user')
-                .then(() => {
-
-                    Fire.$emit('AfterCreatedUserLoadIt'); //custom events
-
-                        Toast.fire({
-                          icon: 'success',
-                          title: 'User created successfully'
-                        })
-
-                        this.$Progress.finish()
-
-                        $('#addNew').modal('hide');
-
-                })
-                .catch(() => {
-                   console.log("Error......")
-                })
-
-
-
-            //this.loadUsers();
-          },
-          deleteUser(id) {
-            Swal.fire({
-              title: 'Are you sure?',
-              text: "You won't be able to revert this!",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-
-              if (result.value) {
-                //Send Request to server
-                this.form.delete('api/user/'+id)
-                    .then((response)=> {
-                            Swal.fire(
-                              'Deleted!',
-                              'User deleted successfully',
-                              'success'
-                            )
-                    this.loadUsers();
-
-                    }).catch(() => {
-                        Swal.fire({
-                          icon: 'error',
-                          title: 'Oops...',
-                          text: 'Something went wrong!',
-                          footer: '<a href>Why do I have this issue?</a>'
-                        })
-                    })
-                }
-
-            })
-          }
-        },
-
+      
         created() { //Like Mounted this method
-            this.loadUsers();
-
-            Fire.$on('AfterCreatedUserLoadIt',()=>{ //custom events fire on
-                this.loadUsers();
-            });
-
-            // setInterval(() => 
-            //     this.loadUsers()
-            // ,3000); //Every 3 seconds loadUsers call
+          this.loadBusinesscategory();
+          this.loadSwitchCompany();
+            /* this.id = this.userData.id;
+             this.name = this.userData.name;
+             this.telephone = this.userData.telephone;
+             this.email = this.userData.email;
+             this.usertype = this.userData.usertype;
+             this.address = this.userData.address;*/
         }
     }
 </script> 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.mt-5{
+margin-top: 1rem !important;
+}
+
+</style>

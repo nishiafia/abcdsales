@@ -3,19 +3,29 @@ require('./bootstrap');
 window.Vue = require('vue');
 Vue.use(require('vue-resource'));
 Vue.component('pagination', require('laravel-vue-pagination'));
+//Vue.use(require('vue-moment'));
 //Import Vue Filter
-require('./filter'); 
+require('./filter');
 
 //Import progressbar
-require('./progressbar'); 
+require('./progressbar');
 
-//Setup custom events 
-require('./customEvents'); 
+//Setup custom events
+require('./customEvents');
 
 //Import View Router
-import VueRouter from 'vue-router'
-import VueTelInput from 'vue-tel-input'
-Vue.use(VueTelInput)
+import VueRouter from 'vue-router';
+
+//import VueTelInput from 'vue-tel-input';
+/*import VueCurrencyInput from 'vue-currency-input'
+
+Vue.use(VueCurrencyInput)*/
+
+
+//Vue.use(VueTelInput)
+//import Dropdown from 'vue-simple-search-dropdown';
+//Vue.use(Dropdown);
+
 
 Vue.use(VueRouter)
 
@@ -41,6 +51,8 @@ window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
+
+
 //Routes
 import router from './routes';
 
@@ -54,8 +66,11 @@ import "font-awesome/css/font-awesome.min.css";
     mode: 'hash',
 
 })*/
-
-
+/*Vue.use(VueGlobalVariable, {
+  globals: {
+  user: 
+  },
+  });*/
 
 
 
@@ -65,3 +80,4 @@ const app = new Vue({
     el: '#app',
     router: router,
 });
+

@@ -16,15 +16,17 @@
                 <form @submit="checkForm" id="createAdministrator">
                    <div class="form-group">
                         <label for="phone">Username(phone)</label>
-                         <vue-tel-input 
-                          v-model="telephone"
-                          id="telephone"
-                          defaultCountry="BD"
-                          required
-                         class="form-control"
-                          >
-                         </vue-tel-input>
-                       
+                        <div class="telephoneformat">Example Format: ( 01712234678 )</div>
+                        <!--VuePhoneNumberInput
+                        default-country-code="BD"
+                        name="telephone"
+                        required
+                        v-model="telephone"
+                         :maxlength="max"
+                         /-->
+                         <input v-model="telephone" type="tel" name="telephone" maxlength="11" minlength="11" required
+                        placeholder="telephone" @keypress="onlyNumber"
+                        class="form-control">
                     </div>
                   <!--div class="form-group">
                     <label for="email">Email address:</label>
@@ -36,63 +38,74 @@
                   </div>
                   <button type="submit" class="btn btn-default">Submit</button>
                 </form>
-                 <div class="signup">Don't have an account yet? <router-link to="/signup" class="singup-link">Signup Here</router-link></div>
+                 <div class="signup">Don't have an account yet? <router-link :to="`/signup/${this.utype}`" class="singup-link">Signup Here</router-link>
+                 </div>
             </div>
-           
         </div>
     </div>
 </template>
-
 <script>
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 
     export default {
        props: ['userData'],
+        components: {  VuePhoneNumberInput},
         mounted() {
             console.log(this.userData)
              console.log('Mounted')
         },
-
          data() {
             return {
                 errors: [],
-                   // email: '',
-                    //dialcode: '+88',
+                   max: 10,
+                    //dialcode: '880',
                     telephone: '',
-                    password: ''
-               
+                    password: '',
+                    phone_number: '',
+                    utype:'basic',
             }
         },
         methods:{
-           
-        checkForm: function (e) {
-         
-          this.errors = [];
-          if (!this.telephone) {
-            this.errors.push('Phone required.');
-          }
-          if (!this.password) {
-            this.errors.push('Password required.');
-          }
-        else
-        {
-         // var navigate = this.$router;
-        var formContents = jQuery("#createAdministrator").serialize();
-        
-        
-          axios.post('/vuelogin', formContents).then(function(response, status, request) {  
-                            alert(response.data.user);
-                             console.log('data',response.data.user);
-                             location.reload();
-                         //navigate.push({ path: '/dashboard' });
-                        this.$router.push({ path: "/dashboard" });
-                        
-                    }, function() {
-                        console.log('failed');
-                    });
-        }
-        
-          e.preventDefault();
-        }
+            onlyNumber ($event) {
+                        let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+                        if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) { // 46 is dot
+                        $event.preventDefault();
+                        }
+                    },
+                checkForm: function (e) {
+                    this.errors = [];
+                    if (!this.telephone) {
+                        this.errors.push('Phone required.');
+                    }
+                    if (!this.password) {
+                       this.errors.push('Password required.');
+                    }
+                    else
+                    {
+                        // var navigate = this.$router;
+                        var formContents = jQuery("#createAdministrator").serialize();
+                        axios.post('/vuelogin', formContents)
+                        .then(function(response, status, request) {
+                          if(response.data.status=='error'){
+                          Toast.fire({
+                          icon: 'error',
+                          title: 'Unauthorized Access'
+                          })
+                          }
+                          else{
+                        console.log('data',response.data.user);
+                        location.reload();
+                        //navigate.push({ path: '/dashboard' });
+                       //this.$router.push({ path: "/dashboard" });
+                         this.$router.push({ name: 'dashboard' });
+                        }}, function() {
+                          console.log('failed');
+                        });
+                    }
+
+                    e.preventDefault();
+                }
       }
-    }
+}
 </script>

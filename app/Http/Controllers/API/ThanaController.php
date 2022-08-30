@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Productsize;
+use App\Thana;
+use App\District;
+use App\Companytype;
+use App\Partner;
 use Illuminate\Http\Request;
 
-class ProductsizeController extends Controller
+class ThanaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +18,7 @@ class ProductsizeController extends Controller
      */
     public function index()
     {
-        $data = Productsize::orderby('id', 'asc')->paginate(5);
+        $data = Thana::with('districtdata')->orderby('id', 'asc')->paginate(10);
 
     	return response()->json($data);
     }
@@ -29,18 +32,17 @@ class ProductsizeController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'psize' => 'required',
+            'thananame' => 'required',
         ]);
 
-      
-            $sizename = Productsize::where('psize', $request['psize'])->first();
-        if(!$sizename)
-        {
-            return Productsize::create([
-                'psize' => $request['psize'],
-               
+            //$sizename = Thana::where('thananame', $request['thananame'])->first();
+        //if(!$sizename)
+        //{
+            return Thana::create([
+                'thananame' => $request['thananame'],
+                'districtid' => $request['districtid'],
              ]);
-        }
+        //}
     }
 
     /**
@@ -64,22 +66,22 @@ class ProductsizeController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'psize' => 'required',
+            'thananame' => 'required',
         ]);
-        $size = Productsize::findOrFail($id);
-       
-        if($request['psize'] !== $size->psize)
-        { 
+        $thana = Thana::findOrFail($id);
+
+       /* if($request['psize'] !== $size->psize)
+        {
             $sizename = Productsize::where('psize', $request['psize'])->first();
-            if(!$sizename){
-                $size->update($request->all());
+            if(!$sizename){*/
+                $thana->update($request->all());
                 return response()->json('new');
-            }
+            /*}
         }
         else{
             return response()->json('same');
             $size->update($request->all());
-        }
+        }*/
     }
 
     /**
@@ -90,16 +92,30 @@ class ProductsizeController extends Controller
      */
     public function destroy($id)
     {
-        $size = Productsize::findOrFail($id);
-        if($size->isactive == 1)
+        $thana = Thana::findOrFail($id);
+        if($thana->isactive == 1)
         {
-            $size->where('id', $id)->update(['isactive' => false]);
+            $thana->where('id', $id)->update(['isactive' => false]);
         }
         else{
-            $size->where('id', $id)->update(['isactive' => true]);   
+            $thana->where('id', $id)->update(['isactive' => true]);
         }
         return response()->json([
-         'message' => 'Size deleted successfully'
+         'message' => 'Thana deleted successfully'
         ]);
+    }
+
+    public function getcity()
+    {
+
+        return Thana::orderby('id', 'asc')->where('isactive', true)->get();
+    }
+    public function getcompanytype()
+    {
+        return Companytype::orderby('id', 'asc')->where('isactive', true)->get();
+    }
+    public function getpartnertype()
+    {
+        return Partner::orderby('id', 'asc')->where('isactive', true)->get();
     }
 }

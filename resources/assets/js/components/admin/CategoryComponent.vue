@@ -3,6 +3,30 @@
         <div class="row mt-5">
           <div class="col-md-12">
             <div class="card">
+
+            <div class="dropdownsearch">
+              <input v-if="Object.keys(selectedItem).length === 0" ref="dropdowninput" v-model="inputValue" class="dropdown-input" type="text" placeholder="Find Category" />
+              <div v-else @click="resetSearchItem" class="dropdown-selected">
+              <input type="hidden"   name="catid" v-model="catid">
+              {{ selectedItem.categoryname }}
+              </div>
+              <div v-show="inputValue && apiLoaded" class="dropdown-listsearch">
+              <div @click="selectSearchItem(item)" v-show="itemSearchVisible(item)" v-for="item in itemList" :key="item.id" class="dropdown-itemserach">
+              
+              {{ item.categoryname }}
+              </div>
+              </div>
+            </div> 
+
+             <!--Dropdown
+        :options="options"
+        v-on:selected="validateSelection"
+        v-on:filter="getDropdownValues"
+        :disabled="false"
+        placeholder="Please select Item">
+      </Dropdown>
+      <p>Selected animal: {{ selected.categoryname || selected.categoryname  }}</p-->
+
               <div class="card-header">
                 <h3 class="card-title">Business Category</h3>
                 <div class="card-tools">
@@ -68,6 +92,7 @@
                     </div>
                   </div>
                   <div class="modal-footer">
+                     <input type="hidden"   name="systemid" v-model="form.systemid">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button v-show="editMode" type="submit" class="btn btn-primary">Update</button>
                     <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
@@ -80,7 +105,10 @@
 </template>
 
 <script>
+
     export default {
+      props: ['userData'],
+     
         data() {
             return {
                 editMode: false,
@@ -88,10 +116,56 @@
                 form: new Form({
                     id: '',
                     categoryname : '',
-                })
+                 
+                }),
+                /* options: [
+              { name: 'Cat', id: 'cat' },
+              { name: 'Dog', id: 'dog' },
+              { name: 'Elephant', id: 'elephant' },
+              { name: 'Girafe', id: 'girafe' },
+              { name: 'Snake', id: 'snake' },
+              { name: 'Spider', id: 'spider' },
+              { name: 'Unicorn', id: 'unicorn' }              
+            ],*/
+           // options:[],
+           // selected: { categoryname: null, id: null }
+
+            inputValue: '',
+            itemList: [],
+            apiLoaded: false,
+             selectedItem: {},
+             catid:0,
             }
         },
+
         methods: {
+          itemSearchVisible (item) {
+          let currentName = item.categoryname.toLowerCase()
+          let currentInput = this.inputValue.toLowerCase()
+          return currentName.includes(currentInput)
+          },
+
+          getSearchList () {
+          axios.get("/businesscategory").then( response => {
+          this.itemList = response.data
+          this.apiLoaded = true
+          })
+          },
+
+          selectSearchItem (theItem) {
+          console.log("category=",theItem.id)
+          this.selectedItem = theItem
+          this.inputValue = ''
+          this.catid=theItem.id
+          this.$emit('on-item-selected', theItem)
+          },
+          resetSearchItem () {
+          this.selectedItem = {}
+          this.$nextTick( () => this.$refs.dropdowninput.focus() )
+          this.$emit('on-item-reset')
+          },
+
+          
         editModalWindow(businesscategory){
            this.form.clear();
            this.editMode = true
@@ -226,17 +300,24 @@
                     })
                 }
             })
-          }
-        },
+          },
+
+
+
+   
+    },
         created() { //Like Mounted this method
             this.loadCategories();
+             this.getSearchList()
             Fire.$on('AfterCreatedCategoryLoadIt',()=>{ //custom events fire on
                 this.loadCategories();
+                this.getSearchList();
             });
             // setInterval(() => 
             //     this.loadUsers()
             // ,3000); //Every 3 seconds loadUsers call
-        }
+        },
+
     }
 </script> 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -247,4 +328,5 @@ margin-top: 1rem !important;
 .pagination{
   margin:15px;
 }
+
 </style>

@@ -15,10 +15,19 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone');
-            $table->text('address');
-            $table->text('others');
+            $table->string('partnertype')->default(0);
+            $table->string('customername');
+            $table->string('email')->nullable();
+            $table->string('dialcode');
+            $table->string('telephone')->unique();
+            $table->string('country')->default('Bangladesh');
+            $table->text('address')->nullable();
+            $table->longtext('description')->nullable();
+            $table->integer('systemid')->default(0);
+            $table->integer('entryid')->default(0);
+            $table->integer('companyid')->default(0);
+            $table->integer('branchid')->default(0);
+            $table->boolean('isactive')->default(true);
             $table->timestamps();
         });
     }

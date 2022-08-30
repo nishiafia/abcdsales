@@ -17,6 +17,10 @@ class CreateGroupcodesTable extends Migration
             $table->id();
             $table->string('gcode');
             $table->string('gtitle');
+            $table->integer('systemid')->default(0);
+            $table->integer('entryid')->default(0);
+            $table->integer('companyid')->default(0);
+            $table->integer('branchid')->default(0);
             $table->boolean('isactive')->default(true);
             $table->timestamps();
         });

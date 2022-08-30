@@ -1,6 +1,21 @@
 <template>
     <div class="container">
         <div class="row mt-5">
+           <div class="scom"> 
+              <table class="switchcompany">
+                <tbody>
+                  <tr>
+                    <td class="switchlabel">Switch Company:</td>
+                    <td> <select  name="teamcompanyid" v-model="teamcompanyid"  class="form-control" v-on:change="switchCompany"> 
+                    <option v-for="scompany in teamcompanies" v-bind:value="scompany.teamcompanyname.id" :key="scompany.teamcompanyname.id">
+                    {{ scompany.teamcompanyname.companyname }}
+                    </option>
+                    </select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
@@ -13,16 +28,18 @@
                 <table class="table table-hover">
                   <tbody>
                     <tr>
-                        <th>ID</th>
+                        
                         <th>Code</th>
                         <th>Title</th>
+                        <th>Company</th>
                         <th>Status</th>
                         <th>Modify</th>
                   </tr> 
                   <tr v-for="groupcode in groupcodes.data" :key="groupcode.id">
-                    <td>{{ groupcode.id }}</td>
+                    
                     <td>{{ groupcode.gcode }}</td>
                     <td>{{ groupcode.gtitle }}</td>
+                     <td>{{ groupcode.companydata.companyname }}</td>
                     <td v-if="groupcode.isactive === 1" class="useractive">Active</td>
 										<td class="userinactive" v-else>In Active</td>
                     <td>
@@ -76,6 +93,10 @@
                     </div>
                   </div>
                   <div class="modal-footer">
+                     <input type="hidden"   name="systemid" v-model="form.systemid">
+                     <input type="hidden"   name="entryid" v-model="form.entryid">
+                     <input type="hidden"   name="companyid" v-model="form.companyid">
+                      <input type="hidden"   name="branchid" v-model="form.branchid">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button v-show="editMode" type="submit" class="btn btn-primary">Update</button>
                     <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
@@ -89,18 +110,26 @@
 
 <script>
     export default {
+       props: ['userData'],
         data() {
             return {
                 editMode: false,
                 groupcodes: {},
+                teamcompanyid:this.userData.companyid,
+                teamcompanies:{}, 
                 form: new Form({
                     id: '',
                     gcode : '',
                     gtitle : '',
+                    systemid: this.userData.systemid,
+                    entryid: this.userData.id,
+                    companyid: this.userData.companyid,
+                    branchid: this.userData.branchid, 
                 })
             }
         },
         methods: {
+     
         editModalWindow(groupcode){
            this.form.clear();
            this.editMode = true
@@ -138,10 +167,18 @@
            $('#addNew').modal('show');
         },
         loadGroupcodes(page) {
-          if (typeof page === 'undefined') {
+           if (typeof page === 'undefined') {
              page = 1;
              }
-          axios.get('api/groupcode?page=' + page).then( data => (this.groupcodes = data.data));
+          let headers = {
+            "Sessionkey": this.userData.remember_token,
+          }
+          axios.get('api/groupcode?page=' + page, {headers})
+          .then( data => {
+            this.groupcodes = data.data;
+            this.page = data.current_page;
+            console.log('data -> ', data);
+          });
           //console.log("data",this.categories);
         },
         createGroupcode(){
@@ -235,11 +272,35 @@
                     })
                 }
             })
-          }
+          },
+          loadSwitchCompany() {
+                let headers = {
+                "Sessionkey": this.userData.remember_token,
+                }
+                axios.get('/getswitchcompany', {headers})
+                .then( response =>{
+                this.teamcompanies = response.data
+                console.log("teamcompany =>", this.teamcompanies);
+                });
+            },
+            switchCompany(event){
+                let headers = {
+                "Sessionkey": this.userData.remember_token,
+                }
+                let target = parseInt(event.target.value);
+                axios.get("/updateSwitchCompany/"+target, {headers})
+                .then( response =>{
+                location.reload();
+                // this.$router.go();
+                Fire.$emit('AfterCreatedUserLoadIt'); //custom events
+                });
+            },
         },
         
         created() { //Like Mounted this method
+        console.log('cc =', this.page);
             this.loadGroupcodes();
+             this.loadSwitchCompany();
             Fire.$on('AfterCreatedGroupcodeLoadIt',()=>{ //custom events fire on
                 this.loadGroupcodes();
             });

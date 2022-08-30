@@ -15,6 +15,12 @@ class CategoryController extends Controller
 
     	return response()->json($data);
     }
+    public function businesscategory()
+    {
+        $data = Category::orderby('id', 'asc')->select('id','categoryname')->get();
+
+    	return response()->json($data);
+    }
 
     public function store(Request $request)
     {   
@@ -52,8 +58,9 @@ class CategoryController extends Controller
             }
         }
         else{
-            return response()->json('same');
+            
             $category->update($request->all());
+            return response()->json('same');
         }
     }
 

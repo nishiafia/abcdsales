@@ -13,13 +13,13 @@
                 <table class="table table-hover">
                   <tbody>
                     <tr>
-                        <th>ID</th>
-                        <th>Size</th>
+                        <th>Company</th>
+                        <th>Color</th>
                         <th>Status</th>
                         <th>Modify</th>
                   </tr> 
                   <tr v-for="prcolor in productcolors.data" :key="prcolor.id">
-                    <td>{{ prcolor.id }}</td>
+                    <td>{{ prcolor.companydata.companyname }}</td>
                     <td>{{ prcolor.colorname }}</td>
                     <td v-if="prcolor.isactive === 1" class="useractive">Active</td>
 										<td class="userinactive" v-else>In Active</td>
@@ -68,6 +68,10 @@
                     </div>
                   </div>
                   <div class="modal-footer">
+                    <input type="hidden" v-model="form.systemid" name="systemid" />
+                     <input type="hidden" v-model="form.entryid" name="entryid" />
+                     <input type="hidden"   name="companyid" v-model="form.companyid">
+                      <input type="hidden"   name="branchid" v-model="form.branchid">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button v-show="editMode" type="submit" class="btn btn-primary">Update</button>
                     <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
@@ -81,6 +85,7 @@
 
 <script>
     export default {
+       props: ['userData'],
         data() {
             return {
                 editMode: false,
@@ -88,6 +93,10 @@
                 form: new Form({
                     id: '',
                     colorname : '',
+                    systemid: this.userData.systemid,
+                    entryid: this.userData.id,
+                    companyid: this.userData.companyid,
+                    branchid: this.userData.branchid, 
                 })
             }
         },
@@ -132,7 +141,10 @@
           if (typeof page === 'undefined') {
              page = 1;
              }
-          axios.get('api/productcolor?page=' + page).then( data => (this.productcolors = data.data));
+            let headers = {
+            "Sessionkey": this.userData.remember_token,
+          }
+          axios.get('api/productcolor?page=' + page,{headers}).then( data => (this.productcolors = data.data));
           //console.log("data",this.categories);
         },
         createColor(){

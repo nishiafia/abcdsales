@@ -15,44 +15,42 @@
                 <div class="col-md-6" v-if="loginfalse = true">
                 <form @submit.prevent="createUser()" method="POST">
                     <div class="form-group">
-                        <label for="name">Name</label>
+                        <label for="name">Name <span class="required-sign">*</span></label>
                         <input v-model="form.name" type="text" name="name" required
                         placeholder="Name"
                         class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                         <has-error :form="form" field="name"></has-error>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Username(phone)</label>
-                         <vue-tel-input 
-                          v-model="form.telephone"
-                          defaultCountry="BD"
-                          >
-                         </vue-tel-input>
-                        <!--div class="row">
-                         <input  type="text" v-model="form.dialcode"  name="dialcode"    
-                        class="form-control form-control-dialcode" readonly>
-                        <input v-model.number="form.telephone" type="number" name="telephone" required @keypress="onlyNumber"
-                        placeholder="Phone Number" :maxlength="11" :minlength="11"
-                        class="form-control form-control-dialcode1" :class="{ 'is-invalid': form.errors.has('telephone') }">
-                         
-                        <has-error :form="form" field="telephone"></has-error>
-                        </div-->
-                          
+                        <label for="phone">Username(phone) <span class="required-sign">*</span></label>
+                        <div class="telephoneformat">Example Format: ( 01712234678 )</div>
+                        <!--VuePhoneNumberInput
+                        default-country-code="BD"
+                        name="telephone"
+                        required
+                        v-model="form.telephone"
+                        :maxlength="max"
+                         @update="updatePhoneNumber"
+                         /-->
+                          <input v-model="form.telephone" type="tel" name="telephone" maxlength="11" minlength="11" required
+                        placeholder="telephone" @keypress="onlyNumber"
+                        class="form-control" >
                     </div>
                     <div class="form-group">
-                       <label for="password">Password</label>
+                       <label for="password">Password <span class="required-sign">*</span></label>
                         <input v-model="form.password" type="password" name="password" id="password" placeholder="Enter password" required=true minlength="4"
                         class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                         <has-error :form="form" field="password"></has-error>
+                        <input type="hidden"   name="adminuserpassword" v-model="form.adminuserpassword">
                     </div>
                     <div class="form-group">
-                       <label for="email">Email</label>
+                       <label for="email">Email <span class="required-sign">*</span></label>
                         <input v-model="form.email" type="email" name="email"  required
                         placeholder="Email Address"
                         class="form-control"  :class="{ 'is-invalid': form.errors.has('email') }">
                         <has-error :form="form" field="email"></has-error>
                     </div>
-                    <div class="form-group">
+                    <!--div class="form-group">
                         <label for="business">Business Category</label>
                         <select name="businesscategory" v-model="form.businesscategory" id="businesscategory" class="form-control" :class="{ 'is-invalid': form.errors.has('branch_contact_person') }">
                           <option value="">Select Business Categories</option>
@@ -61,24 +59,46 @@
                           </option>
                         </select>
                         <has-error :form="form" field="usertype"></has-error>
+                    </div-->
+                      <div class="form-group">
+                        <label for="business">Package <span class="required-sign">*</span></label>
+                        <select name="usertype" v-model="form.usertype" id="usertype" class="form-control" :class="{ 'is-invalid': form.errors.has('branch_contact_person') }">
+                           <option value="basic">Basic</option>
+                          <option value="standard">Standard</option>
+                           <option value="professional">Professional</option>
+                        </select>
+                        <has-error :form="form" field="usertype"></has-error>
                     </div>
-                    <input type="hidden"   name="usertype" v-model="form.usertype">
                      <input type="hidden"   name="dialcode" v-model="form.dialcode">
+                     <input type="hidden"   name="systemid" v-model="form.systemid">
+                      <input type="hidden"   name="address" v-model="form.address">
+                      <input type="hidden"   name="companyid" v-model="form.companyid">
+                    <input type="hidden"   name="branchid" v-model="form.branchid">
+                    <input type="hidden"   name="companylimit" v-model="form.companylimit">
+                    <input type="hidden"   name="entrylimit" v-model="form.entrylimit">
                     <button type="submit" class="btn btn-default">Submit</button>
                 </form>
-                <div class="signup">Already have an account? <router-link to="/login" class="singup-link">Signin Here</router-link></div>
+                <div class="signup">Already have an account? <router-link to="/login" class="singup-link">Signin Here</router-link>
                 </div>
-           
+                </div>
         </div>
     </div>
 </template>
-
 <script>
+import VuePhoneNumberInput from 'vue-phone-number-input';
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
     export default {
+       props: ['utype'],
+         components: {  VuePhoneNumberInput},
+          mounted() {
+            console.log(this.utype)
+             console.log('Mounted')
+        },
          data() {
             return {
                 errors: [],
                categories: {},
+               max: 11,
                form: new Form({
                     name : '',
                     email: '',
@@ -90,28 +110,35 @@
                     dialcode: '+88',
                     telephone: '',
                     password: '',
-                    usertype: 'standard',
-                    businesscategory: '',
-
+                    adminuserpassword: '@ABCU789',
+                    usertype: this.utype,
+                   // businesscategory: '',
+                    companyid: 0,
+                    address: '',
+                    systemid:0,
+                    branchid:0,
+                    companylimit:1,
+                    entrylimit:10,
                 })
-               
             }
         },
         methods: {
-                    onlyNumber ($event) {
+                updatePhoneNumber(data) {
+                    this.form.dialcode=data.countryCallingCode;
+                    console.log("dialcode=", this.form.dialcode);
+                  },
+                 onlyNumber ($event) {
                         let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
                         if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) { // 46 is dot
                         $event.preventDefault();
                         }
                     },
                   /*onInput(formattedNumber, { number, valid, country }) {
-                      
                         this.phone.number = number.international;
                         console.log("dialcode",this.phone.number);
                         this.phone.valid = valid;
                         this.phone.country = country && country.name;
                         console.log("dialcode",this.phone.country);
-                      
                       },*/
                       loadBusinesscategory() {
                         axios.get('/getbusinesscategory').then( data => (this.categories = data.data));
@@ -124,13 +151,13 @@
 
                           this.form.post('api/user')
                           .then((response) => {
-                          console.log("response:",response.data);
+                         // console.log("response:",response.data);
                           if(response.data === '')
-                          {     alert("Wrong");
+                          {
                           Fire.$emit('AfterCreatedUserLoadIt'); //custom events
                           Toast.fire({
                           icon: 'error',
-                          title: 'Email Already Exists!!'
+                          title: 'Data Already Exists!!'
                           })
                           }
                           else{
@@ -150,7 +177,6 @@
                           .catch(() => {
                           console.log("Error......")
                           })
-                   
                     }
         },
         created() { //Like Mounted this method

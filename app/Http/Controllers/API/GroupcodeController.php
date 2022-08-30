@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Groupcode;
+use App\User;
+use App\Productunit;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 class GroupcodeController extends Controller
 {
     /**
@@ -13,10 +15,23 @@ class GroupcodeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Groupcode::orderby('id', 'asc')->paginate(5);
-
+        $systemid = base64_decode($request->header('sessionKey'));
+        $userinfo = User::where('id', $systemid)->first();
+        if($userinfo->usertype == 'superadmin')
+        {
+        $data = Groupcode::with(array('companydata'=>function($query){
+            $query->select('id','companyname');}))->orderby('id', 'asc')->paginate(15);
+        }
+        if($userinfo->usertype == 'basic' || $userinfo->usertype == 'standard' || $userinfo->usertype == 'professional'){
+            $data = Groupcode::with(array('companydata'=>function($query){
+                $query->select('id','companyname');}))->where('systemid', $userinfo->systemid)->orderby('id', 'asc')->paginate(15);
+        }
+        if($userinfo->usertype == 'team'){
+            $data = Groupcode::with(array('companydata'=>function($query){
+                $query->select('id','companyname');}))->where('systemid', $userinfo->systemid)->where('companyid', $userinfo->companyid)->orderby('id', 'asc')->paginate(15);
+        }
     	return response()->json($data);
     }
 
@@ -32,14 +47,19 @@ class GroupcodeController extends Controller
             'gcode' => 'required',
             'gtitle' => 'required',
         ]);
-        $code = Groupcode::where('gcode', $request['gcode'])->first();
-        $title = Groupcode::where('gtitle', $request['gtitle'])->first();
-        if(!$code && !$title)
+        $code = Groupcode::where('gcode', $request['gcode'])->where('systemid', $request['systemid'])->where('companyid', $request['companyid'])->first();
+       // $title = Groupcode::select('gtitle')->where('gtitle', $request['gtitle'])->where('systemid', $request['systemid'])->where('companyid', $request['companyid'])->first();
+       Log::info( "code ===>" . $code);
+       //Log::info( "title ===>" . $title->gtitle);
+       if(!$code)
         {
-            return Groupcode::create([
+           return Groupcode::create([
                 'gcode' => $request['gcode'],
                 'gtitle' => $request['gtitle'],
-               
+                'systemid' => $request['systemid'],
+                'entryid' => $request['entryid'],
+                'companyid' => $request['companyid'],
+                'branchid' => $request['branchid'],
              ]);
         }
     }
@@ -69,20 +89,18 @@ class GroupcodeController extends Controller
             'gtitle' => 'required',
         ]);
         $groupdata = Groupcode::findOrFail($id);
-       
-        if($request['gcode'] !== $groupdata->gcode || $request['gtitle'] !== $groupdata->gtitle)
-        { 
-            $groupcode = Groupcode::where('gcode', $request['gcode'])->first();
-            $grouptitle = Groupcode::where('gtitle', $request['gtitle'])->first();
-            if(!$groupcode || !$grouptitle){
-               
+        if($request['gcode'] !== $groupdata->gcode)
+        {
+            $groupcode = Groupcode::where('gcode', $request['gcode'])->where('systemid', $request['systemid'])->where('companyid', $request['companyid'])->first();
+          //  $grouptitle = Groupcode::where('gtitle', $request['gtitle'])->where('systemid', $request['systemid'])->where('companyid', $request['companyid'])->first();
+            if(!$groupcode){
                 $groupdata->update($request->all());
                 return response()->json('new');
             }
         }
         else{
-            return response()->json('same');
             $groupdata->update($request->all());
+            return response()->json('same');
         }
     }
 
@@ -100,10 +118,45 @@ class GroupcodeController extends Controller
             $groupdata->where('id', $id)->update(['isactive' => false]);
         }
         else{
-            $groupdata->where('id', $id)->update(['isactive' => true]);   
+            $groupdata->where('id', $id)->update(['isactive' => true]);
         }
         return response()->json([
          'message' => 'Code deleted successfully'
         ]);
+    }
+
+    public function getinventorygroup(Request $request)
+    {
+        $systemid = base64_decode($request->header('sessionKey'));
+        $userinfo = User::where('id', $systemid)->first();
+        if($userinfo->usertype == 'superadmin')
+        {
+        return Groupcode::orderby('id', 'asc')->where('isactive',true)->get();
+        }
+        if($userinfo->usertype == 'basic' || $userinfo->usertype == 'standard' || $userinfo->usertype == 'professional'){
+            return Groupcode::orderby('id', 'asc')->where('systemid', $userinfo->systemid)->where('isactive',true)->get();
+        }
+        if($userinfo->usertype == 'team'){
+            return Groupcode::orderby('id', 'asc')->where('systemid', $userinfo->systemid)->where('companyid', $userinfo->companyid)->where('isactive',true)->get();
+        }
+    }
+    public function getgroupcode(Request $request)
+    {
+        $systemid = base64_decode($request->header('sessionKey'));
+        $userinfo = User::where('id', $systemid)->first();
+        if($userinfo->usertype == 'superadmin')
+        {
+        return Groupcode::orderby('id', 'asc')->where('isactive',true)->get();
+        }
+        if($userinfo->usertype == 'basic' || $userinfo->usertype == 'standard' || $userinfo->usertype == 'professional'){
+            return Groupcode::orderby('id', 'asc')->where('systemid', $userinfo->systemid)->where('isactive',true)->get();
+        }
+        if($userinfo->usertype == 'team'){
+            return Groupcode::orderby('id', 'asc')->where('systemid', $userinfo->systemid)->where('companyid', $userinfo->companyid)->where('isactive',true)->get();
+        }
+    }
+    public function getunittype(Request $request)
+    {
+            return Productunit::orderby('id', 'asc')->get();
     }
 }

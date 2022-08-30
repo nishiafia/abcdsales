@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Productcolor extends Model
 {
     protected $guarded = [];
+    public function companydata()
+    {
+        return $this->hasOne('App\Company', 'id', 'companyid');
+    }
 }

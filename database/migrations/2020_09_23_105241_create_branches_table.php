@@ -17,22 +17,15 @@ class CreateBranchesTable extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
             $table->string('branchname');
-            $table->text('address');
-            $table->string('phone');
-            $table->integer('branch_contact_person')->unsigned();
-			$table->integer('branch_supervisor')->unsigned();
+            $table->text('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->integer('contactperson')->default(0);
+            $table->integer('systemid')->default(0);
+            $table->integer('entryid')->default(0);
+			$table->integer('companyid')->default(0);
             $table->boolean('isactive')->default(true);
             $table->timestamps();
         });
-        Schema::table('branches', function(Blueprint $table){
-			$table->foreign('branch_contact_person')
-					->references('id')
-					->on('users');
-			$table->foreign('branch_supervisor')
-					->references('id')
-					->on('users');
-		});
-     
     }
 
     /**

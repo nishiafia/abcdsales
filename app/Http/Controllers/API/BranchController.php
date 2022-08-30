@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Branch;
-//use App\User;
+use App\User;
 use Illuminate\Http\Request;
 use DB;
 
@@ -116,5 +116,13 @@ class BranchController extends Controller
         return response()->json([
          'message' => 'Branch Inactive successfully'
         ]);
+    }
+    public function getbranch(Request $request,$id)
+    {
+        $systemid = base64_decode($request->header('sessionKey')); 
+        $userinfo = User::where('id', $systemid)->first();
+       
+            return Branch::select('id')->where('companyid', $id)->get(); 
+        
     }
 }

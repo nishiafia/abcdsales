@@ -13,13 +13,13 @@
                 <table class="table table-hover">
                   <tbody>
                     <tr>
-                        <th>ID</th>
+                       <th>Company</th> 
                         <th>Size</th>
                         <th>Status</th>
                         <th>Modify</th>
                   </tr> 
                   <tr v-for="prsize in productsizes.data" :key="prsize.id">
-                    <td>{{ prsize.id }}</td>
+                   <td>{{ prsize.companydata.companyname }}</td>
                     <td>{{ prsize.psize }}</td>
                     <td v-if="prsize.isactive === 1" class="useractive">Active</td>
 										<td class="userinactive" v-else>In Active</td>
@@ -68,6 +68,10 @@
                     </div>
                   </div>
                   <div class="modal-footer">
+                    <input type="hidden" v-model="form.systemid" name="systemid" />
+                     <input type="hidden" v-model="form.entryid" name="entryid" />
+                     <input type="hidden"   name="companyid" v-model="form.companyid">
+                      <input type="hidden"   name="branchid" v-model="form.branchid">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     <button v-show="editMode" type="submit" class="btn btn-primary">Update</button>
                     <button v-show="!editMode" type="submit" class="btn btn-primary">Create</button>
@@ -81,6 +85,7 @@
 
 <script>
     export default {
+       props: ['userData'],
         data() {
             return {
                 editMode: false,
@@ -88,6 +93,10 @@
                 form: new Form({
                     id: '',
                     psize : '',
+                    systemid: this.userData.systemid,
+                    entryid: this.userData.id,
+                    companyid: this.userData.companyid,
+                    branchid: this.userData.branchid, 
                 })
             }
         },
@@ -132,7 +141,11 @@
           if (typeof page === 'undefined') {
              page = 1;
              }
-          axios.get('api/productsize?page=' + page).then( data => (this.productsizes = data.data));
+              let headers = {
+            "Sessionkey": this.userData.remember_token,
+          }
+              //console.log("props=",this.userData.remember_token);
+          axios.get('api/productsize?page=' + page,{headers}).then( data => (this.productsizes = data.data));
           //console.log("data",this.categories);
         },
         createSize(){

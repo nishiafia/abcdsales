@@ -1,0 +1,2 @@
+php artisan make:middleware UseApiGuard <to create api gurad>
+https://bannister.me/blog/setting-the-correct-auth-guard/

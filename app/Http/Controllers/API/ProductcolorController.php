@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Productcolor;
+use App\Producttype;
+use App\User;
 use Illuminate\Http\Request;
 
 class ProductcolorController extends Controller
@@ -13,10 +15,22 @@ class ProductcolorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Productcolor::orderby('id', 'asc')->paginate(5);
-
+        $systemid = base64_decode($request->header('sessionKey'));
+        $userinfo = User::where('id', $systemid)->first();
+        if($userinfo->usertype == 'superadmin')
+        {
+        $data = Productcolor::orderby('id', 'asc')->paginate(15);
+        }
+        if($userinfo->usertype == 'basic' || $userinfo->usertype == 'standard' || $userinfo->usertype == 'professional'){
+            $data = Productcolor::with(array('companydata'=>function($query){
+                $query->select('id','companyname');}))->where('systemid', $userinfo->systemid)->orderby('id', 'asc')->paginate(15);
+        }
+        if($userinfo->usertype == 'team'){
+            $data = Productcolor::with(array('companydata'=>function($query){
+                $query->select('id','companyname');}))->where('systemid', $userinfo->systemid)->where('companyid', $userinfo->companyid)->orderby('id', 'asc')->paginate(15);
+        }
     	return response()->json($data);
     }
 
@@ -31,14 +45,15 @@ class ProductcolorController extends Controller
         $this->validate($request, [
             'colorname' => 'required',
         ]);
-
-      
-            $pcolor = Productcolor::where('colorname', $request['colorname'])->first();
+            $pcolor = Productcolor::where('colorname', $request['colorname'])->where('systemid', $request['systemid'])->where('companyid', $request['companyid'])->first();
         if(!$pcolor)
         {
             return Productcolor::create([
                 'colorname' => $request['colorname'],
-               
+                'systemid' => $request['systemid'],
+                'entryid' => $request['entryid'],
+                'companyid' => $request['companyid'],
+                'branchid' => $request['branchid'],
              ]);
         }
     }
@@ -67,18 +82,17 @@ class ProductcolorController extends Controller
             'colorname' => 'required',
         ]);
         $pcolor = Productcolor::findOrFail($id);
-       
         if($request['colorname'] !== $pcolor->colorname)
-        { 
-            $pcolorexist = Productcolor::where('colorname', $request['colorname'])->first();
+        {
+            $pcolorexist = Productcolor::where('colorname', $request['colorname'])->where('systemid', $request['systemid'])->where('companyid', $request['companyid'])->first();
             if(!$pcolorexist){
                 $pcolor->update($request->all());
                 return response()->json('new');
             }
         }
         else{
-            return response()->json('same');
             $pcolor->update($request->all());
+            return response()->json('same');
         }
     }
 
@@ -96,10 +110,26 @@ class ProductcolorController extends Controller
              $pcolor->where('id', $id)->update(['isactive' => false]);
         }
         else{
-             $pcolor->where('id', $id)->update(['isactive' => true]);   
+             $pcolor->where('id', $id)->update(['isactive' => true]);
         }
         return response()->json([
          'message' => 'Color deleted successfully'
         ]);
+    }
+
+    public function getproductcolor(Request $request)
+    {
+            $systemid = base64_decode($request->header('sessionKey'));
+            $userinfo = User::where('id', $systemid)->first();
+            if($userinfo->usertype == 'basic' || $userinfo->usertype == 'standard' || $userinfo->usertype == 'professional'){
+            return Productcolor::orderby('id', 'asc')->where('systemid', $userinfo->systemid)->where('isactive',true)->get();
+            }
+            if($userinfo->usertype == 'team'){
+                return Productcolor::orderby('id', 'asc')->where('systemid', $userinfo->systemid)->where('companyid', $userinfo->companyid)->where('isactive',true)->get();
+                }
+    }
+    public function getproducttype(Request $request)
+    {
+            return Producttype::orderby('id', 'asc')->get();
     }
 }
